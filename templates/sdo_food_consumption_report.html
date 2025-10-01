@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDO Report</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sdo.jpg') }}" type="image/x-icon">
+    <!-- ✅ Bootstrap 4 CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ✅ Font Awesome (For Icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/reports.css') }}" rel="stylesheet">
+    <!-- ✅ Custom CSS -->
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <!-- ✅ jQuery (MUST be first, before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- ✅ Popper.js (Required for Bootstrap dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- ✅ Bootstrap 4 JS (Only one version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ✅ PDF & HTML to PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    {% include 'sdotopnav.html' %}
+    <a class="navbar-brand ps-3" href="#">SDO <span style="text-transform: uppercase; font-style: italic;">{{
+            session['campus'] }} REPORT</span></a>
+    <div class="ms-auto"></div>
+    <!--<ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+    <!-- Sidebar and Main Content Layout -->
+    <div id="layoutSidenav">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+
+        <!--body content-->
+        <div id="layoutSidenav_content" style="margin: 0 auto;">
+            <!--tabe content-->
+            <div class="container-fluid px-4">
+                <h3 class="fw-bold text-uppercase border-bottom border-3 pb-2 text-center fs-1 pt-5"
+                    style="border-color: #2b3e53;">
+                    Food Consumption Report
+                </h3>
+                <div class="table-wrapper">
+
+                    <div class="topnav-table d-flex align-items-center justify-content-between px-3 py-2">
+                        <!-- Dropdown category -->
+                        <div class="dropdown" style="margin-top: 20px;">
+                            <button class="btn dropdown-toggle px-4 py-2 m-3" type="button" id="filterDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2b3e53;">
+                                <i class="fas fa-filter"></i> Filter Options
+                            </button>
+                            <ul class="dropdown-menu p-2 shadow-lg rounded-3" aria-labelledby="filterDropdown">
+                                <!-- Month -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">Month</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item {% if request.args.get('month') == '' %}active{% endif %}"
+                                                href="?month=">All Months</a></li>
+                                        {% for m in ["January", "February", "March", "April", "May", "June", "July",
+                                        "August", "September", "October", "November", "December"] %}
+                                        <li><a class="dropdown-item {% if request.args.get('month') == m %}active{% endif %}"
+                                                href="?month={{ m }}">{{ m }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                <!-- Year -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">Year</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item {% if request.args.get('year') == '' %}active{% endif %}"
+                                                href="?year=">All Years</a></li>
+                                        {% for y in range(2025, 2013, -1) %}
+                                        <li><a class="dropdown-item {% if request.args.get('year') == y|string %}active{% endif %}"
+                                                href="?year={{ y }}">{{ y }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                <!-- Office -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">Office</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item {% if request.args.get('office') == '' %}active{% endif %}"
+                                                href="?office=">All Offices</a></li>
+                                        {% for office in ["Procurement", "Auxiliary Services", "RGO", "IAU", "QAM",
+                                        "SDO", "PDO", "EA",
+                                        "ICT", "CAS", "CABE", "CICS", "CET", "CTE", "CE", "CA", "TAO", "ORS", "SFAO",
+                                        "GC", "OLS", "SOO", "SD", "OJT", "NSTP", "HRMO", "RMO", "PO", "BO", "CD",
+                                        "AO", "PFMO", "EMU", "PSO", "GSO", "ESO", "RO", "OVCRDES", "OVCDEA", "OVCAA",
+                                        "OVCAF"] %}
+                                        <li><a class="dropdown-item {% if request.args.get('office') == office %}active{% endif %}"
+                                                href="?office={{ office }}">{{ office }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Download Report Button -->
+                        <div class="download-category">
+                            <button class="btn dropdown-toggle px-4 py-2" type="button" id="downloadDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2b3e53">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                <li><a class="dropdown-item"
+                                        href="{{ url_for('sdo_food_consumption_pdf', campus=request.args.get('campus'), month=request.args.get('month'), year=request.args.get('year'), office=request.args.get('office')) }}">
+                                        Download PDF</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{{ url_for('sdo_food_consumption_excel', campus=request.args.get('campus'), month=request.args.get('month'), year=request.args.get('year'), office=request.args.get('office')) }}">
+                                        Download Excel</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{{ url_for('export_food_consumption_csv', campus=request.args.get('campus'), month=request.args.get('month'), year=request.args.get('year'), office=request.args.get('office')) }}">
+                                        Download CSV</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="table-container">
+                    <div class="fade-overlay fade-left" id="fadeLeft"></div>
+                    <div class="fade-overlay fade-right" id="fadeRight"></div>
+                    <!-- 🚀 Left Arrow -->
+                    <div class="scroll-arrow scroll-arrow-left" id="arrowLeft">
+                        &#9664; <!-- Unicode left arrow -->
+                    </div>
+
+                    <!-- 🚀 Right Arrow -->
+                    <div class="scroll-arrow scroll-arrow-right" id="arrowRight">
+                        &#9654; <!-- Unicode right arrow -->
+                    </div>
+
+                    <div class="scrollable-content" id="scrollableContent">
+                        <!-- Food Consumption Table -->
+                        <table class="table" id="food_data">
+                            <thead>
+                                <tr>
+                                    <th>Campus</th>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Office</th>
+                                    <th>Food Type</th>
+                                    <th>Servings</th>
+                                    <th>GHG Emission (KG CO₂e)</th>
+                                    <th>GHG Emission (T CO₂e)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="food_data">
+                                {% if data %}
+                                {% for record in data %}
+                                <tr>
+                                    <td>{{ record['Campus'] }}</td>
+                                    <td>{{ record['YearTransaction'] }}</td>
+                                    <td>{{ record['Month'] }}</td>
+                                    <td>{{ record['Office'] }}</td>
+                                    <td>{{ record['TypeOfFoodServed'] }}</td>
+                                    <td>{{ record['QuantityOfServing'] }}</td>
+                                    <td>{{ record['GHGEmissionKGCO2e'] }}</td>
+                                    <td>{{ record['GHGEmissionTCO2e'] }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#editModal{{ record['id'] }}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <form class="delete-form d-inline" data-id="{{ record['id'] }}">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <!-- Edit Modal -->
+                                <div class="modal fade" id="editModal{{ record['id'] }}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h2 class="modal-title">Edit Food Consumption Record</h2>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form
+                                                    action="{{ url_for('edit_food_consumption_record', id=record['id']) }}"
+                                                    method="POST">
+                                                    <div class="form-group">
+                                                        <label for="campus">Campus:</label>
+                                                        <select id="campus" name="campus" class="form-control" readonly>
+                                                            <option value="{{ record['Campus'] }}" selected>{{
+                                                                record['Campus'] }}</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="year">Year:</label>
+                                                        <select id="year" name="year" required class="form-control">
+                                                            {% for y in range(2025, 2013, -1) %}
+                                                            <option value="{{ y }}" {% if record['YearTransaction']==y
+                                                                %}selected{% endif %}>{{ y }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="month">Month:</label>
+                                                        <select id="month" name="month" required class="form-control">
+                                                            {% for m in ["January", "February", "March", "April", "May",
+                                                            "June",
+                                                            "July", "August", "September", "October", "November",
+                                                            "December"] %}
+                                                            <option value="{{ m }}" {% if record['Month']==m
+                                                                %}selected{% endif %}>{{ m }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="office">Office:</label>
+                                                        <select id="office" name="office" required class="form-control">
+                                                            {% for office in ["Procurement", "Auxiliary Services",
+                                                            "RGO", "IAU", "QAM", "SDO", "PDO", "EA",
+                                                            "ICT", "CAS", "CABE", "CICS", "CET", "CTE", "CE", "CA",
+                                                            "TAO", "ORS", "SFAO",
+                                                            "GC", "OLS", "SOO", "SD", "OJT", "NSTP", "HRMO", "RMO",
+                                                            "PO", "BO", "CD",
+                                                            "AO", "PFMO", "EMU", "PSO", "GSO", "ESO", "RO", "OVCRDES",
+                                                            "OVCDEA", "OVCAA",
+                                                            "OVCAF"] %}
+                                                            <option value="{{ office }}" {% if record['Office']==office
+                                                                %}selected{% endif %}>{{ office }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Inside the edit modal form, update the food type and servings
+                                                        inputs -->
+                                                    <div class="form-group">
+                                                        <label for="foodType">Type of Food:</label>
+                                                        <select id="foodType" name="foodType" required
+                                                            class="form-control"
+                                                            onchange="calculateEmissions({{ record['id'] }})">
+                                                            {% for food_type in ["1 Standard Breakfast", "1 Gourmet Breakfast",
+                                                            "1 Hot Snack (burger and fries)", "1 Cold or Hot Snack",
+                                                            "1 Sandwich", "1 Average Meal", "Meal,Vegan",
+                                                            "Meal,Vegetarian", "Meal with Beef", "Meal with
+                                                            Chicken"] %}
+                                                            <option value="{{ food_type }}" {% if
+                                                                record['TypeOfFoodServed']==food_type %}selected{% endif
+                                                                %}>
+                                                                {{ food_type }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="servings">Number of Servings:</label>
+                                                        <input type="number" id="servings" name="servings" step="1"
+                                                            required class="form-control"
+                                                            value="{{ record['QuantityOfServing'] }}"
+                                                            onchange="calculateEmissions({{ record['id'] }})"
+                                                            oninput="calculateEmissions({{ record['id'] }})">
+                                                    </div>
+
+                                                    <div class="ghg-emission-container">
+                                                        <div class="ghg-emission-field">
+                                                            <label>GHG Emission (KG CO₂e):</label>
+                                                            <input type="number" id="ghgEmissionKg" name="ghgEmissionKg"
+                                                                readonly class="form-control"
+                                                                value="{{ record['GHGEmissionKGCO2e'] }}">
+                                                        </div>
+                                                        <div class="ghg-emission-field">
+                                                            <label>GHG Emission (T CO₂e):</label>
+                                                            <input type="number" id="ghgEmissionT" name="ghgEmissionT"
+                                                                readonly class="form-control"
+                                                                value="{{ record['GHGEmissionTCO2e'] }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group mt-4">
+                                                        <button type="submit" class="btn btn-primary">Save
+                                                            Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No data available</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!-- Pagination -->
+                    <div style="z-index: 4; position: relative; padding: 5px 10px; padding-top: 20px;"
+                        class="pagination-container d-flex justify-content-between align-items-center">
+                        <!-- Previous Button -->
+                        <a class="btn btn-link text-dark {% if current_page == 1 %}disabled{% endif %}"
+                            href="{{ url_for('sdo_food_consumption_report', page=current_page-1, campus=campus_filter, month=month_filter, year=year_filter, office=office_filter) }}">
+                            &lsaquo; Previous
+                        </a>
+
+                        <!-- Page Indicator -->
+                        <span class="page-indicator text-dark">
+                            {{ current_page }} of {{ total_pages }}
+                        </span>
+
+                        <!-- Next Button -->
+                        <a class="btn btn-dark {% if current_page == total_pages %}disabled{% endif %}"
+                            href="{{ url_for('sdo_food_consumption_report', page=current_page+1, campus=campus_filter, month=month_filter, year=year_filter, office=office_filter) }}">
+                            Next &rsaquo;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+                const arrowLeft = document.getElementById("arrowLeft");
+                const arrowRight = document.getElementById("arrowRight");
+
+                function updateFadeVisibility() {
+                    const { scrollLeft, scrollWidth, clientWidth } = scrollableContent;
+
+                    const showLeft = scrollLeft > 0;
+                    const showRight = scrollLeft < scrollWidth - clientWidth - 1;
+
+                    // 🌟 Fade visibility
+                    fadeLeft.classList.toggle("visible", showLeft);
+                    fadeLeft.classList.toggle("hidden", !showLeft);
+                    fadeRight.classList.toggle("visible", showRight);
+                    fadeRight.classList.toggle("hidden", !showRight);
+
+                    // 🡄🡆 Arrow visibility (same condition as fades)
+                    arrowLeft.classList.toggle("visible", showLeft);
+                    arrowRight.classList.toggle("visible", showRight);
+                }
+
+                scrollableContent.addEventListener("scroll", updateFadeVisibility);
+                window.addEventListener("resize", updateFadeVisibility);
+                document.addEventListener("DOMContentLoaded", updateFadeVisibility);
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    const thElements = document.querySelectorAll('.table thead th');
+
+                    thElements.forEach(th => {
+                        th.addEventListener('mouseenter', function () {
+                            const text = this.textContent.trim();
+                            if (this.offsetWidth < this.scrollWidth) { // Check if text is truncated
+                                const tooltip = document.createElement('div');
+                                tooltip.textContent = text;
+                                tooltip.classList.add('custom-tooltip');
+                                document.body.appendChild(tooltip);
+
+                                const rect = this.getBoundingClientRect();
+                                tooltip.style.left = rect.left + 'px';
+                                tooltip.style.top = rect.bottom + 5 + 'px'; // Position below the th
+                            }
+                        });
+
+                        th.addEventListener('mouseleave', function () {
+                            const tooltip = document.querySelector('.custom-tooltip');
+                            if (tooltip) {
+                                tooltip.remove();
+                            }
+                        });
+                    });
+                });
+
+            </script>
+
+        </div>
+
+
+    </div>
+    <script>
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            const year = document.getElementById("year").value;
+            const quarter = document.getElementById("quarter").value;
+            const month = document.getElementById("month").value;
+            const mainCategory = document.getElementById("main_category").value;
+
+            // Construct the URL with query parameters for filtering
+            const url = `/export_waste_segregation_csv?year=${encodeURIComponent(year)}&quarter=${encodeURIComponent(quarter)}&month=${encodeURIComponent(month)}&main_category=${encodeURIComponent(mainCategory)}`;
+
+            // Redirect to the URL to initiate the download
+            window.location.href = url;
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            const year = document.getElementById("year").value;
+            const month = document.getElementById("month").value;
+            const office = document.getElementById("office").value;
+
+            // Construct the URL with query parameters for filtering
+            const url = `/export_food_consumption_csv?year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&office=${encodeURIComponent(office)}`;
+
+            // Redirect to the URL to initiate the download
+            window.location.href = url;
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+
+                        // Auto-scroll to the active report link
+                        link.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                }
+            });
+        });
+    </script>
+    <!-- Add at the bottom of sdo_food_consumption_report.html -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle delete form submissions
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const id = this.dataset.id;
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This record will be permanently deleted!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/delete_food_consumption_record/${id}`, {
+                                method: 'POST'
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: 'Deleted!',
+                                            text: 'Record has been deleted.',
+                                            icon: 'success',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            data.message || 'Failed to delete record.',
+                                            'error'
+                                        );
+                                    }
+                                });
+                        }
+                    });
+                });
+            });
+
+            // Handle edit form submissions
+            document.querySelectorAll('form[action*="edit_food_consumption_record"]').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Record updated successfully',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message || 'Failed to update record',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                });
+            });
+        });
+
+        // Function to calculate emissions based on food type and servings
+        // Update the calculateEmissions function in your script section
+        function calculateEmissions(modalId) {
+            const modal = document.getElementById(`editModal${modalId}`);
+            if (!modal) return;
+
+            const foodType = modal.querySelector('#foodType').value;
+            const servings = parseInt(modal.querySelector('#servings').value) || 0;
+
+            const foodFactors = {
+                "1 Standard Breakfast": 0.84,
+                "1 Gourmet Breakfast": 2.33,
+                "1 Hot Snack (burger and fries)": 2.77,
+                "1 Cold or Hot Snack": 2.02,
+                "1 Sandwich": 1.27,
+                "1 Average Meal": 4.70,
+                "Meal,Vegan": 1.69,
+                "Meal,Vegetarian": 2.85,
+                "Meal with Beef": 6.93,
+                "Meal with Chicken": 3.39
+            };
+
+            const factor = foodFactors[foodType] || 0;
+            const ghgEmissionKg = servings * factor;
+            const ghgEmissionT = ghgEmissionKg / 1000;
+
+            // Update the emission fields
+            modal.querySelector('#ghgEmissionKg').value = ghgEmissionKg.toFixed(2);
+            modal.querySelector('#ghgEmissionT').value = ghgEmissionT.toFixed(2);
+        }
+
+        // Add event listener to update calculations when modal opens
+        document.addEventListener('DOMContentLoaded', function () {
+            const editModals = document.querySelectorAll('[id^="editModal"]');
+            editModals.forEach(modal => {
+                modal.addEventListener('shown.bs.modal', function () {
+                    const modalId = this.id.replace('editModal', '');
+                    calculateEmissions(modalId);
+                });
+            });
+        });
+    </script>
+    </div>
+    </div>
+
+</body>
+
+</html>

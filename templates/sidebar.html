@@ -1,0 +1,122 @@
+<style>
+    .sb-sidenav-menu .nav-link,
+    .sb-sidenav-menu .sb-sidenav-menu-heading {
+        text-transform: uppercase;
+    }
+ 
+    .scrollable-menu {
+        overflow-y: auto;
+        /* Enables scrolling */
+        max-height: 300px;
+        /* Adjust height as needed */
+        scrollbar-width: none;
+        /* Hides scrollbar in Firefox */
+    }
+
+    .scrollable-menu::-webkit-scrollbar {
+        width: 0px;
+        /* Hides scrollbar in Chrome, Edge, Safari */
+        display: none;
+    }
+    html{
+            scrollbar-width: none !important;
+        }
+</style>
+
+<!-- Sidebar -->
+<div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="background-color: #343a40;">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                <div class="sb-sidenav-menu-heading"></div>
+                <a class="nav-link" href="{{ url_for('sdo_dashboard') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    Dashboard
+                </a>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages">
+                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                    Report
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapsePages">
+                    <nav class="sb-sidenav-menu-nested nav accordion scrollable-menu" id="sidenavAccordionPages">
+                        <!-- Scope 1 -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#scope1Collapse">
+                            <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                            Scope 1
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="scope1Collapse">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('sdo_fuel_emissions_report') }}">Fuel Emissions Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_lpg_consumption_report') }}">LPG Consumption Report</a>
+                            </nav>
+                        </div>
+
+                        <!-- Scope 2 -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#scope2Collapse">
+                            <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                            Scope 2
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="scope2Collapse">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('sdo_electricity_report') }}">Electricity Report</a>
+                            </nav>
+                        </div>
+
+                        <!-- Scope 3 -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#scope3Collapse">
+                            <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                            Scope 3
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="scope3Collapse">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('sdo_water_report') }}">Water Consumption Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_treated_water_report') }}">Treated Water Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_waste_segregation_report') }}">Waste Segregation Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_waste_unseg_report') }}">Waste Unsegregation Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_food_consumption_report') }}">Food Consumption Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_flight_emissions_report') }}">Flight Emissions Report</a>
+                                <a class="nav-link" href="{{ url_for('sdo_accommodation_emissions_report') }}">Accommodation Emissions Report</a>
+                            </nav>
+                        </div>
+                    </nav>
+                </div>
+
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAnalytics"
+                    aria-expanded="false" aria-controls="collapseAnalytics">
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                    Analytics
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                    data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="{{ url_for('sdoanalytics') }}">Emission Trends</a>
+                    </nav>
+                </div>
+
+                <a class="nav-link" href="{{ url_for('manageacc_sdo') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                    Manage Account
+                </a>
+                <a class="nav-link" href="{{ url_for('sdo') }}">
+                    <div class="sb-nav-link-icon">
+                        <i class="fas fa-book"></i>
+                    </div> User's Guide
+                </a>
+                <div class="logout-container">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="fas fa-power-off fa-fw"></i> Sign-out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

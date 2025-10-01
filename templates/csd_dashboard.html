@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Center For Sustainable Development</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/CSD.png') }}" type="image/x-icon"> <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Center For Sustainable Development</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/CSD.png') }}" type="image/x-icon">
+    <!-- CSS Libraries (Include only once) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+
+    <!-- JavaScript Libraries (Include only once) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>
+    <!-- Optional: Bootstrap 5 (Only use if you need Bootstrap 5 features) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
+
+    <style>
+        .sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+            max-height: 100vh;
+            /* Ensure the sidebar does not exceed the viewport height */
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            /* Width of the scrollbar */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #6c757d;
+            /* Color of the scrollbar thumb */
+            border-radius: 10px;
+            /* Rounded corners of the scrollbar thumb */
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #343a40;
+            /* Color of the scrollbar track */
+        }
+
+        /* Layout Styling */
+        #layoutSidenav {
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #layoutSidenav_nav {
+            width: 250px;
+            background-color: #495057;
+            flex-shrink: 0;
+        }
+
+        .collapse {
+            max-height: 300px;
+            /* Set a max height for the dropdown */
+            overflow-y: auto;
+            /* Enable vertical scrolling for the dropdown */
+        }
+
+        .sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+            /* Hides the scrollbar */
+        }
+
+        element-selector {
+            overflow-x: scroll;
+            /* Allows horizontal scrolling */
+        }
+
+        /* Modern Color Scheme */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #1abc9c;
+            --background-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        /* Sidebar */
+        #layoutSidenav_nav {
+            background-color: var(--secondary-color);
+        }
+
+        .sb-sidenav-menu .nav-link {
+            color: var(--white);
+        }
+
+        .sb-sidenav-menu .nav-link:hover {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+
+        /* Cards */
+
+        .card-1 {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 0px 11px 1px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+        }
+
+        .card,
+        .cardt {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 10px 10px 13px -10px rgba(0, 0, 0, 9);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+            background-blend-mode: hard-light;
+            /* Blend the background image with solid color */
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.7) !important;
+            background-color: #444 !important;
+            /* Change this to your desired hover color */
+            transition: background-color 0 .3s ease;
+            /* Smooth transition */
+            background-blend-mode: normal;
+            /* Reveal the background image on hover */
+
+
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+        }
+
+        .card-body,
+        .card-bodyt {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 15px 15px 10px -10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+            padding: 1.5rem;
+            opacity: 0.8;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+            /* Add opacity here */
+
+        }
+
+
+        .card-body:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+            opacity: 0.05;
+        }
+
+
+        .bot-card {
+            font-size: 0.7em;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .card-body:hover~.view {
+            display: block !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .top-nav::-webkit-scrollbar {
+            display: none;
+            /* Hides scrollbar in Chrome, Safari */
+        }
+    </style>
+
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark"
+        style="padding-left: 45px; height: 80px; padding-bottom: 20px; padding-top: 20px;">
+        <img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}"
+            alt="Campus Logo" height="75" class="me-2">
+        <!-- Navbar brand -->
+        <a class="navbar-brand ps-3" href="{{ url_for('csd_dashboard') }}">CSD <span
+                style="text-transform: uppercase; font-style: italic;">{{
+                session['campus'] }} Dashboard</span></a>
+
+        <!-- Spacer to push "Sign-out" to the right -->
+        <div class="ms-auto"></div>
+
+        <!-- Sign-out Icon and Link -->
+        <!--<ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+    <!-- Sidebar and Main Content -->
+    <div id="layoutSidenav">
+        <!-- Sidebar -->
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu" style="margin-top: 60px;">
+                    <div class="nav">
+                        <a class="nav-link" href="{{ url_for('csd_dashboard') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Report
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <!-- Scope 1 -->
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#scope1Collapse">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                                    Scope 1
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="scope1Collapse">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{{ url_for('fuel_emissions_report') }}">Fuel Emissions Report</a>
+                                        <a class="nav-link" href="{{ url_for('lpg_consumption_report') }}">LPG Consumption Report</a>
+                                    </nav>
+                                </div>
+
+                                <!-- Scope 2 -->
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#scope2Collapse">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                                    Scope 2
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="scope2Collapse">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{{ url_for('electricity_report') }}">Electricity Report</a>
+                                    </nav>
+                                </div>
+
+                                <!-- Scope 3 -->
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#scope3Collapse">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-circle"></i></div>
+                                    Scope 3
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="scope3Collapse">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{{ url_for('water_report') }}">Water Consumption Report</a>
+                                        <a class="nav-link" href="{{ url_for('treated_water_report') }}">Treated Water Report</a>
+                                        <a class="nav-link" href="{{ url_for('waste_segregation_report') }}">Waste Segregation Report</a>
+                                        <a class="nav-link" href="{{ url_for('waste_unseg_report') }}">Waste Unsegregation Report</a>
+                                        <a class="nav-link" href="{{ url_for('food_consumption_report') }}">Food Consumption Report</a>
+                                        <a class="nav-link" href="{{ url_for('flight_emissions_report') }}">Flight Emissions Report</a>
+                                        <a class="nav-link" href="{{ url_for('accommodation_emissions_report') }}">Accommodation Emissions Report</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                            Analytics
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('csdanalytics') }}">Emission Trends</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="{{ url_for('manage_account') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                            Manage Account
+                        </a>
+                        <a class="nav-link" href="{{ url_for('csd') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                            User's Guide
+                        </a>
+                        <div class="logout-container">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-power-off fa-fw"></i> Sign-out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+
+        <style>
+            /* Cards */
+
+            .card-1 {
+                border: none;
+                border-radius: 10px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0px 0px 11px 1px rgba(0, 0, 0, 0.1);
+                background: linear-gradient(135deg, var(--start-color), var(--end-color));
+            }
+
+            .card,
+            .cardt {
+                border: none;
+                border-radius: 10px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 10px 10px 13px -10px rgba(0, 0, 0, 9);
+                background: linear-gradient(135deg, var(--start-color), var(--end-color));
+                background-blend-mode: hard-light;
+                /* Blend the background image with solid color */
+                background-size: cover;
+                background-position: center;
+            }
+
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 10px rgba(0, 0, 0, 0.7) !important;
+                background-color: #444 !important;
+                /* Change this to your desired hover color */
+                transition: background-color 0 .3s ease;
+                /* Smooth transition */
+                background-blend-mode: normal;
+                /* Reveal the background image on hover */
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+                font-weight: bold;
+                margin-bottom: 0.4rem;
+            }
+
+            .card-body,
+            .card-bodyt {
+                border: none;
+                border-radius: 10px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: inset 15px 15px 10px -10px rgba(0, 0, 0, 0.5);
+                background: linear-gradient(135deg, var(--start-color), var(--end-color));
+                padding: 1.5rem;
+                opacity: 0.8;
+                transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+                /* Add opacity here */
+
+            }
+
+
+            .card-body:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+                opacity: 0.05;
+            }
+
+
+            .bot-card {
+                font-size: 0.7em;
+            }
+
+            /* Footer */
+            .footer {
+                background-color: var(--primary-color);
+                color: var(--white);
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .card-body:hover~.view {
+                display: block !important;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .card-title {
+                    font-size: 1rem;
+                }
+
+                .card-body {
+                    padding: 1rem;
+                }
+            }
+
+            /* Animation */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(100px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .fade-in {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+
+            .top-nav::-webkit-scrollbar {
+                display: none;
+                /* Hides scrollbar in Chrome, Safari */
+            }
+
+            /* style2 */
+            .top-info {
+                position: relative;
+                overflow: hidden;
+                /* Prevents overflow */
+                color: rgb(255, 255, 255);
+                background: linear-gradient(to bottom,
+                        rgba(76, 73, 73, 0.7) 0%,
+                        /* Solid red on the left */
+                        /* rgba(94, 94, 94, 0.485) 70%, */
+                        /* Gradual fade */
+                        rgba(76, 73, 73, 0.7) 90%),
+                    /* Fully transparent in the middle */
+                    url('static/images/bg2.jpg');
+                /* Your image */
+                /* filter: grayscale(100%); */
+                background-size: cover;
+                /* Ensures image covers the div */
+                background-position: center bottom;
+                /* Align image to the right */
+                background-blend-mode: normal;
+                /* Ensures proper blending */
+
+                transition: background 0.5s ease-in-out;
+                /* Smooth transition if needed */
+                font-weight: bold;
+                font-family: sans-serif;
+            }
+
+            .con4 {
+                height: max-content;
+            }
+
+            @media (max-width: 767px) {
+                .con3 {
+                    position: static !important;
+                    bottom: 0px !important;
+                    left: 0% !important;
+                    transform: translateX(0%) !important;
+                }
+
+                .con4 {
+                    margin-top: calc(80px + 20px) !important;
+                }
+
+                .w1 {
+                    margin-top: 20px;
+                }
+            }
+
+            @media (max-width: 420px) {
+                .con4 {
+                    margin-top: calc(300px + 20px) !important;
+                }
+            }
+
+            /* style3 */
+            .emi {
+                position: relative;
+                overflow: hidden;
+                /* Prevents overflow */
+
+                background: linear-gradient(to right,
+                        rgb(35, 35, 35) 0%,
+                        /* Solid red on the left */
+                        rgba(35, 35, 35, 0.698) 70%,
+                        /* Gradual fade */
+                        rgba(5, 35, 35, 0.348) 90%),
+                    /* Fully transparent in the middle */
+                    url('static/images/emi.jpg');
+                /* Your image */
+
+                background-size: cover;
+                /* Ensures image covers the div */
+                background-position: center bottom;
+                /* Align image to the right */
+                background-blend-mode: normal;
+                /* Ensures proper blending */
+
+                transition: background 0.5s ease-in-out;
+                /* Smooth transition if needed */
+            }
+
+            .tree {
+                position: relative;
+                overflow: hidden;
+                /* Prevents overflow */
+
+                background: linear-gradient(to right,
+                        rgb(23, 46, 23) 0%,
+                        /* Solid red on the left */
+                        rgba(23, 46, 23, 0.876) 60%,
+                        /* Gradual fade */
+                        rgba(23, 46, 23, 0.348) 90%),
+                    /* Fully transparent in the middle */
+                    url('static/images/tre.jpg');
+                /* Your image */
+
+                background-size: cover;
+                /* Ensures image covers the div */
+                background-size: 110%;
+                /* Zoom in to 150% of the original size */
+                background-position: 0px -230px;
+                /* Move the image */
+                background-blend-mode: normal;
+                /* Ensures proper blending */
+                /* background-attachment: fixed; */
+
+
+                transition: background 0.5s ease-in-out;
+                /* Smooth transition if needed */
+            }
+
+            /* style4 */
+
+            :root {
+                --background-gradient: linear-gradient(178deg, #ffff33 10%, #3333ff);
+                --gray: #34495e;
+                --darkgray: #2c3e50;
+            }
+
+            .dropdown-container {
+                display: flex;
+                justify-content: flex-end;
+                /* Align to the right */
+                width: 100%;
+                margin-top: 40px;
+            }
+
+            /* Wrapper for the select element */
+
+
+            /* Custom styles for the dropdown */
+            #yearFilter {
+                /* Reset Select */
+                appearance: none;
+                outline: 10px red;
+                border: 0;
+                box-shadow: none;
+                /* Personalize */
+                flex: 1;
+                padding: 0 1em;
+                color: #fff;
+                background-color: var(--darkgray);
+                background-image: none;
+                cursor: pointer;
+            }
+
+            #yearFilter::-ms-expand {
+                display: none;
+            }
+
+            #campusFilter {
+                /* Reset Select */
+                appearance: none;
+                outline: 10px red;
+                border: 0;
+                box-shadow: none;
+                /* Personalize */
+                flex: 1;
+                padding: 0 1em;
+                color: #fff;
+                background-color: var(--darkgray);
+                background-image: none;
+                cursor: pointer;
+            }
+
+            #campusFilter::-ms-expand {
+                display: none;
+            }
+
+            .select-wrapper {
+                position: relative;
+                display: flex;
+                width: 10em;
+                height: 3em;
+                border-radius: .25em;
+            }
+
+
+
+            /* Add the icon inside the select wrapper */
+            .select-wrapper::after {
+                content: '\25BC';
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.5em;
+                /* Adjust width as needed */
+                height: max-content;
+                /* Full height */
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 7px;
+                border-radius: .25em;
+                background-color: #34495e;
+                transition: .25s all ease;
+                pointer-events: none;
+            }
+
+            /* Custom styles for the dropdown options */
+            .select-wrapper:hover::after {
+                color: #f39c12;
+            }
+
+
+            @media (max-width: 1200px) and (min-width: 767px) {
+                .row-cols-md-5>.col {
+                    flex: 0 0 calc(100% / 3);
+                    /* 3 columns */
+                    max-width: calc(100% / 3);
+                }
+            }
+        </style>
+
+        <div id="layoutSidenav_content">
+            <div class="top-nav" style="scroll-snap-type: y mandatory;  overflow-y: scroll; height: 100vh;">
+
+                <div class=" position-relative" style="height: 100%;  ">
+                    <div class="top-info mb-6"
+                        style="scroll-snap-align: start; height: 75%; padding-top: 15%; overflow: visible;">
+                        <h1 class="mt-4" style="font-weight: 700; font-size: 2em; text-align: center;">CENTER FOR
+                            SUSTAINABLE DEVELOPMENT DASHBOARD </h1>
+                        <h1 class="mt-2" style="text-align: center; font-size:1em;color: #d3d3d3;">Consumption Trends
+                        </h1>
+
+                        <div class="container con3 mt-5"
+                            style="color: #555555; font-weight:normal; position: absolute; bottom: -100px;  left: 50%;transform: translateX(-50%);">
+                            <div class="row row-cols-1 row-cols-md-2 g-4 d-flex">
+                                <div class="col-sm-12 col-md-12">
+                                    <div class="h-100 d-flex flex-column justify-content-between"
+                                        style="background-color: #f2edf5; padding: 30px; padding-top: 50px; border-color: #cacaca; border-radius: 10px; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);">
+                                        <p
+                                            style="margin-bottom: 0; line-height: 1.4; text-align: justify; font-size: 1em;">
+                                            The Center for Sustainable Development Dashboard offers an overview of
+                                            historical and
+                                            forecasted consumption and emission trends across all campuses of Batangas
+                                            State
+                                            University TNEU. It highlights variability in resource use, showcasing
+                                            distinct
+                                            fluctuations in various metrics. This analysis enables a comprehensive
+                                            understanding of
+                                            consumption patterns, supporting strategic decisions for improved
+                                            sustainability.
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- <div class="z-n1 position-absolute"
+                                style="background: linear-gradient(90deg, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);height: 180px; min-height: 180px; width: 120vw; max-width: 400%;top: 18%; left: 50%; transform: translateX(-50%);z-index: -1;">
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container con4" style="margin-top: 10px; scroll-snap-align: start;">
+                    <div class="row mb-4 mt-1">
+                        <div class="dropdown-container">
+                            <form method="GET" action="{{ url_for('csd_dashboard') }}" style="display: flex;">
+
+                                <div class="select-wrapper mr-3">
+                                    <select id="sortDropdown" onchange="handleSort(this.value)" class="form-control"
+                                        style="width: 200px; display: inline-block;">
+                                        <option value="sort_all">Show All</option>
+                                        <option value="sort_div">By Scope</option>
+                                    </select>
+                                </div>
+
+                                <div class="select-wrapper mr-3">
+                                    <select name="campus" id="campusFilter" class="form-control"
+                                        onchange="this.form.submit()">
+                                        <option value="all" {% if selected_campus=='all' %}selected{% endif %}>All
+                                            Campuses</option>
+                                        <option value="Alangilan" {% if selected_campus=='Alangilan' %}selected{% endif
+                                            %}>Alangilan</option>
+                                        <option value="ARASOF-Nasugbu" {% if selected_campus=='ARASOF-Nasugbu'
+                                            %}selected{% endif %}>ARASOF-Nasugbu</option>
+                                        <option value="Balayan" {% if selected_campus=='Balayan' %}selected{% endif %}>
+                                            Balayan</option>
+                                        <option value="Central" {% if selected_campus=='Central' %}selected{% endif %}>
+                                            Central</option>
+                                        <option value="JPLPC-Malvar" {% if selected_campus=='JPLPC-Malvar' %}selected{%
+                                            endif %}>JPLPC-Malvar</option>
+                                        <option value="Lemery" {% if selected_campus=='Lemery' %}selected{% endif %}>
+                                            Lemery</option>
+                                        <option value="Lipa" {% if selected_campus=='Lipa' %}selected{% endif %}>Lipa
+                                        </option>
+                                        <option value="Lobo" {% if selected_campus=='Lobo' %}selected{% endif %}>Lobo
+                                        </option>
+                                        <option value="Mabini" {% if selected_campus=='Mabini' %}selected{% endif %}>
+                                            Mabini</option>
+                                        <option value="Pablo Borbon" {% if selected_campus=='Pablo Borbon' %}selected{%
+                                            endif %}>Pablo Borbon</option>
+                                        <option value="Rosario" {% if selected_campus=='Rosario' %}selected{% endif %}>
+                                            Rosario</option>
+                                        <option value="San Juan" {% if selected_campus=='San Juan' %}selected{% endif
+                                            %}>San Juan</option>
+                                    </select>
+                                </div>
+                                <div class="select-wrapper">
+                                    <select name="year" id="yearFilter" class="form-control"
+                                        onchange="this.form.submit()">
+                                        {% for year in range(current_year, current_year - 10, -1) %}
+                                        <option value="{{ year }}" {% if year==selected_year %}selected{% endif %}>{{
+                                            year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-5 ">
+                        <!-- Total Emission Card -->
+                        <div class="col-md-6 w1">
+                            <div class="cardt emi bg-dark text-white h-100">
+                                <div class="card-bodyt">
+                                    <div class="card-title">Total Emission</div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <strong>Total CO₂ Emission:</strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-4">
+                                                    <span style="font-size: 1.5em; font-weight: bold; color: white;">
+                                                        {{ "{:,.2f}".format(current_emission_data['electricity'] +
+                                                        current_emission_data['fuel'] + current_emission_data['waste_segregated'] +
+                                                        current_emission_data['waste_unsegregated'] + current_emission_data['water']
+                                                        + current_emission_data['treated_water'] + current_emission_data['lpg'] +
+                                                        current_emission_data['food_waste'] + current_emission_data['accommodation']
+                                                        + current_emission_data['flight']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="ms-4 ps-4" style="border-left: 2px solid rgba(255,255,255,0.2);">
+                                                    <strong style="color: rgb(255, 255, 255);">Equivalent to</strong>
+                                                    <span style="font-size: 1.5em; font-weight: bold; color: white; display: block;">
+                                                        {{ "{:,.2f}".format((current_emission_data['electricity'] +
+                                                        current_emission_data['fuel'] + current_emission_data['waste_segregated'] +
+                                                        current_emission_data['waste_unsegregated'] + current_emission_data['water']
+                                                        + current_emission_data['treated_water'] + current_emission_data['lpg'] +
+                                                        current_emission_data['food_waste'] + current_emission_data['accommodation']
+                                                        + current_emission_data['flight']) / 1000) }} tCO₂-e
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tree Offset Card -->
+                        <div class="col-md-6 w1">
+                            <div class="cardt tree bg-success text-white h-100">
+                                <div class="card-bodyt">
+                                    <div class="card-title">Carbon Offset</div>
+                                    <div>
+                                        <strong>Total no. of trees to offset emissions for {{ selected_year }}:</strong>
+
+                                    </div>
+                                    <span style="font-size: 1.5em; font-weight: bold; color: white;">
+                                        {{ "{:,}".format(current_emission_data['tree_offset']) }} Trees
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>
+                        .boxConDiv {
+                            margin-top: 30px;
+                            scroll-snap-align: start;
+                            display: none;
+                            flex-direction: row;
+                            gap: 15px;
+                            position: relative;
+                            /* Center vertically */
+                            justify-content: center;
+                            height: 800px;
+                        }
+
+                        .box2 {
+                            width: 30%;
+                            height: 120px;
+                            background: #fff;
+                            padding: 15px;
+                            border-radius: 8px;
+                            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                            overflow: hidden;
+                            transition: height 0.3s ease, width 0.3s ease;
+                            position: relative;
+                            cursor: pointer;
+                        }
+
+                        .box2:hover {
+                            height: 400px;
+                            background: #e3f2fd;
+                        }
+
+
+                        .box2.active {
+                            padding: 20px;
+                            width: 100%;
+                            height: max-content;
+                            position: absolute;
+                            top: 50px;
+                            z-index: 10;
+                            background: #ffffff;
+                        }
+
+                        .title2 {
+                            font-size: 30px;
+                            font-weight: bold;
+                            margin-bottom: 15px;
+                        }
+
+                        .box2.active .title2 {
+                            font-size: 25px;
+                        }
+
+                        .cons2 {
+                            margin-top: 10px;
+                        }
+
+                        .icons i {
+                            margin-right: 8px;
+                            font-size: 20px;
+                            cursor: pointer;
+                        }
+
+                        .icons {
+                            display: flex;
+                            flex-direction: row;
+                            gap: 10px;
+                            /* Add gap for spacing between items */
+                            transition: gap 0.5s ease, transform 0.5s ease;
+                            /* Transition gap and transform */
+                        }
+
+                        .box2:hover .icons {
+                            flex-direction: column;
+                            gap: 20px;
+                            /* Increase gap for column layout */
+                            transform: translateY(10px);
+                            /* Optional: Add a slight vertical movement */
+                        }
+
+                        .box2.active .icons {
+                            display: flex;
+                            flex-direction: row;
+                            gap: 10px;
+                            /* Add gap for spacing between items */
+                            transition: gap 0.5s ease, transform 0.5s ease;
+                            /* Transition gap and transform */
+                        }
+
+                        .content2 {
+                            margin-top: 10px;
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.3s ease;
+                        }
+
+
+                        .box2.active .content2 {
+                            max-height: max-content;
+                        }
+
+
+
+                        .spanText {
+                            display: none;
+                        }
+
+                        .box2:hover .spanText {
+                            display: inline;
+                            font-size: 14px;
+                            font-weight: bold;
+                            margin-left: 10px;
+                        }
+
+                        .box2.active .spantText {
+                            display: none;
+                        }
+
+                        .close-btn {
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: red;
+                            color: white;
+                            border: none;
+                            padding: 5px 20px;
+                            cursor: pointer;
+                            display: none;
+                            border-radius: 20px;
+                        }
+
+                        .box2.active .close-btn {
+                            display: block;
+                        }
+                    </style>
+
+<!--DUPLICATED--------------------------------------------------------------------------------------------------->
+
+                    <div class="boxConDiv">
+                        <div class="box2" onclick="expandBox(this)">
+                            <button class="close-btn" onclick="closeBox(event, this)">X</button>
+                            <div class="title2">SCOPE 1</div>
+                            <div class="icons">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"
+                                        style="color:#b74343">
+                                        <path fill="currentColor"
+                                            d="M32 64C32 28.7 60.7 0 96 0L256 0c35.3 0 64 28.7 64 64l0 192 8 0c48.6 0 88 39.4 88 88l0 32c0 13.3 10.7 24 24 24s24-10.7 24-24l0-154c-27.6-7.1-48-32.2-48-62l0-64L384 64c-8.8-8.8-8.8-23.2 0-32s23.2-8.8 32 0l77.3 77.3c12 12 18.7 28.3 18.7 45.3l0 13.5 0 24 0 32 0 152c0 39.8-32.2 72-72 72s-72-32.2-72-72l0-32c0-22.1-17.9-40-40-40l-8 0 0 144c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32L32 64zM96 80l0 96c0 8.8 7.2 16 16 16l128 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16L112 64c-8.8 0-16 7.2-16 16z"
+                                            stroke="currentColor" stroke-width="1.5" />
+                                    </svg><span class="spanText">Fuel</span></span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="bi bi-fire"
+                                        viewBox="0 0 16 16" style="color:#c79247">
+                                        <path fill="currentColor"
+                                            d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15" />
+                                    </svg><span class="spanText">LPG</span></span>
+                            </div>
+                            <div class="content2">
+                                <div class="row row-cols-1 row-cols-md-5 g-4" style="margin: 5px 30px">
+                                    <!-- Fuel Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #b74343; background-image: linear-gradient(
+                                            rgba(0, 0, 0, 0.2),
+                                            rgba(0, 0, 0, 0.2)
+                                          ) , url('static/images/f.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/fuel_emissions'"
+                                                style="background-color: #b74343;">
+                                                <div class="card-title">
+                                                    Fuel
+                                                </div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                            viewBox="0 0 512 512" style="color:white">
+                                                            <path fill="white"
+                                                                d="M32 64C32 28.7 60.7 0 96 0L256 0c35.3 0 64 28.7 64 64l0 192 8 0c48.6 0 88 39.4 88 88l0 32c0 13.3 10.7 24 24 24s24-10.7 24-24l0-154c-27.6-7.1-48-32.2-48-62l0-64L384 64c-8.8-8.8-8.8-23.2 0-32s23.2-8.8 32 0l77.3 77.3c12 12 18.7 28.3 18.7 45.3l0 13.5 0 24 0 32 0 152c0 39.8-32.2 72-72 72s-72-32.2-72-72l0-32c0-22.1-17.9-40-40-40l-8 0 0 144c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32L32 64zM96 80l0 96c0 8.8 7.2 16 16 16l128 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16L112 64c-8.8 0-16 7.2-16 16z"
+                                                                stroke="currentColor" stroke-width="1.5" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['fuel']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3    ">
+                                                    <strong class="bot-card">Fuel Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['fuel'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- <a class="small text-white stretched-link" href="sdo_fuel_emissions_report"></a> -->
+                                        </div>
+                                    </div>
+
+                                    <!-- LPG Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #c79247; background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/l.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/lpg_consumption'"
+                                                style="background-color: #c79247">
+                                                <div class="card-title">LPG</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid rgb(255, 255, 255); opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-fire" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['lpg']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card"> LPG Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_lpg_records }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box2" onclick="expandBox(this)">
+                            <button class="close-btn" onclick="closeBox(event, this)">X</button>
+                            <div class="title2">SCOPE 2</div>
+                            <div class="icons">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        class="bi bi-ev-front" viewBox="0 0 16 16" style="color: #bcbc3d;">
+                                        <path fill="currentColor"
+                                            d="M9.354 4.243a.19.19 0 0 0-.085-.218.186.186 0 0 0-.23.034L6.051 7.246a.188.188 0 0 0 .136.316h1.241l-.673 2.195a.19.19 0 0 0 .085.218c.075.043.17.03.23-.034l2.88-3.187a.188.188 0 0 0-.137-.316H8.572z" />
+                                        <path
+                                            d="M4.819 2A2.5 2.5 0 0 0 2.52 3.515l-.792 1.848a.8.8 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 8.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413q0-.248-.049-.49l-.335-1.68a1.8 1.8 0 0 0-.964-1.261.8.8 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 2H4.82ZM3.44 3.91A1.5 1.5 0 0 1 4.82 3h6.362a1.5 1.5 0 0 1 1.379.91l.792 1.847a1.8 1.8 0 0 0 .853.904c.222.112.381.32.43.564l.336 1.679q.03.146.029.294v.413a1.48 1.48 0 0 1-1.408 1.484c-1.555.07-3.786.155-5.592.155s-4.037-.084-5.592-.155A1.48 1.48 0 0 1 1 9.611v-.413q0-.148.03-.294l.335-1.68a.8.8 0 0 1 .43-.563c.383-.19.685-.511.853-.904z"
+                                            stroke="currentColor" stroke-width="1.5" />
+                                    </svg><span class="spanText">Electricity</span></span>
+                                </span>
+
+                            </div>
+                            <div class="content2">
+                                <div class="row row-cols-1 row-cols-md-5 g-4" style="margin: 5px 30px">
+                                    <!-- Electricity Card -->
+
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100 position-relative" style="background-color: #bcbc3d; background-image:linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) , url('static/images/e.jpg')">
+                                            <div class="card-body" onclick="window.location.href='report/electricity'"
+                                                style="background-color: #bcbc3d;">
+                                                <div class="card-title" style="opacity: 2;">
+                                                    Electricity
+                                                </div>
+
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div>
+                                                    <strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                            fill="currentColor" class="bi bi-ev-front"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M9.354 4.243a.19.19 0 0 0-.085-.218.186.186 0 0 0-.23.034L6.051 7.246a.188.188 0 0 0 .136.316h1.241l-.673 2.195a.19.19 0 0 0 .085.218c.075.043.17.03.23-.034l2.88-3.187a.188.188 0 0 0-.137-.316H8.572z" />
+                                                            <path
+                                                                d="M4.819 2A2.5 2.5 0 0 0 2.52 3.515l-.792 1.848a.8.8 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 8.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413q0-.248-.049-.49l-.335-1.68a1.8 1.8 0 0 0-.964-1.261.8.8 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 2H4.82ZM3.44 3.91A1.5 1.5 0 0 1 4.82 3h6.362a1.5 1.5 0 0 1 1.379.91l.792 1.847a1.8 1.8 0 0 0 .853.904c.222.112.381.32.43.564l.336 1.679q.03.146.029.294v.413a1.48 1.48 0 0 1-1.408 1.484c-1.555.07-3.786.155-5.592.155s-4.037-.084-5.592-.155A1.48 1.48 0 0 1 1 9.611v-.413q0-.148.03-.294l.335-1.68a.8.8 0 0 1 .43-.563c.383-.19.685-.511.853-.904z"
+                                                                stroke="currentColor" stroke-width="1.5" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['electricity']) }} kg
+                                                    </span>
+                                                </div>
+
+                                                <div class="mt-3">
+                                                    <strong class="bot-card">Electricity Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['electricity'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="box2" onclick="expandBox(this)">
+                            <button class="close-btn" onclick="closeBox(event, this)">X</button>
+                            <div class="title2">SCOPE 3</div>
+                            <div class="icons">
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        class="bi bi-droplet" viewBox="0 0 16 16" color="#289999">
+                                        <path fill-rule="evenodd" fill="currentColor"
+                                            d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
+                                            stroke="currentColor" stroke-width="1.5" />
+                                        <path fill-rule="evenodd" fill="currentColor"
+                                            d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z"
+                                            stroke="currentColor" stroke-width="1.5" />
+                                    </svg><span class="spanText">WATER</span></span>
+                                <span> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        class="bi bi-droplet" viewBox="0 0 16 16" color="#285b99">
+                                        <path fill-rule="evenodd" fill="currentColor"
+                                            d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"
+                                            stroke="currentColor" stroke-width="0.2" />
+                                    </svg><span class="spanText">TREATED WATER</span></span>
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                        class="bi bi-recycle" viewBox="0 0 16 16" color="#5b575f">
+                                        <path fill="currentColor"
+                                            d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.981a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.545 4.454a.5.5 0 0 0 .434.748H5a.5.5 0 0 1 0 1H1.723A1.5 1.5 0 0 1 .421 12.24zm10.89 1.463a.5.5 0 1 0-.868.496l1.716 3.004a.5.5 0 0 1-.434.748h-5.57l.647-.646a.5.5 0 1 0-.708-.707l-1.5 1.5a.5.5 0 0 0 0 .707l1.5 1.5a.5.5 0 1 0 .708-.707l-.647-.647h5.57a1.5 1.5 0 0 0 1.302-2.244z" />
+                                    </svg><span class="spanText">WASTE SEGREGATED</span></span>
+
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="bi bi-trash"
+                                        viewBox="0 0 16 16" color="#995028">
+                                        <path fill="currentColor"
+                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                        <path
+                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                    </svg><span class="spanText">WASTE UNSEGREGATED</span></span>
+                                <span> <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                        class="bi bi-airplane" viewBox="0 0 16 16" color="#1e1e1eb8">
+                                        <path fill="currentColor"
+                                            d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849m.894.448C7.111 2.02 7 2.569 7 3v4a.5.5 0 0 1-.276.447l-5.448 2.724a.5.5 0 0 0-.276.447v.792l5.418-.903a.5.5 0 0 1 .575.41l.5 3a.5.5 0 0 1-.14.437L6.708 15h2.586l-.647-.646a.5.5 0 0 1-.14-.436l.5-3a.5.5 0 0 1 .576-.411L15 11.41v-.792a.5.5 0 0 0-.276-.447L9.276 7.447A.5.5 0 0 1 9 7V3c0-.432-.11-.979-.322-1.401C8.458 1.159 8.213 1 8 1s-.458.158-.678.599" />
+                                    </svg><span class="spanText">FLIGHT</span></span>
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                        class="bi bi-journals" viewBox="0 0 16 16" color="#9069bc">
+                                        <path fill="currentColor"
+                                            d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2 2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2" />
+                                        <path
+                                            d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0" />
+                                    </svg><span class="spanText">ACCOMMODATION</span></span>
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                        class="bi bi-cup-hot-fill" viewBox="0 0 16 16" color="#28995b">
+                                        <path fill-rule="evenodd" fill="currentColor"
+                                            d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5" />
+                                        <path
+                                            d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8" />
+                                    </svg><span class="spanText">FOOD</span></span>
+                            </div>
+                            <div class="content2">
+                                <div class="row row-cols-1 row-cols-md-5 g-4" style="margin: 5px 30px">
+                                    <!-- Water Card -->
+
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100 " style="background-color: #289999; background-image:linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) , url('static/images/w.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/water_consumption'"
+                                                style="background-color: #289999">
+                                                <div class="card-title">
+
+                                                    Water Consumption</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                            fill="currentColor" class="bi bi-droplet"
+                                                            viewBox="0 0 16 16">
+                                                            <path fill-rule="evenodd"
+                                                                d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
+                                                                stroke="currentColor" stroke-width="1.5" />
+                                                            <path fill-rule="evenodd"
+                                                                d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z"
+                                                                stroke="currentColor" stroke-width="1.5" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['water']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+
+                                                    <strong class="bot-card">Water Records:</strong>
+                                                    <!-- Water Records -->
+                                                <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                    {{ total_records['water'] }}
+                                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Treated Water Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #285b99; background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/t.jpg')">
+                                            <div class="card-body" onclick="window.location.href='report/treated_water'"
+                                                style="background-color: #285b99">
+                                                <div class="card-title">Treated Water</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                            fill="currentColor" class="bi bi-droplet"
+                                                            viewBox="0 0 16 16">
+                                                            <path fill-rule="evenodd"
+                                                                d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"
+                                                                stroke="currentColor" stroke-width="0.2" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['treated_water']) }}
+                                                        Kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card">Treated Water Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['treated_water'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Waste Segregated Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #5b575f; background-image:linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) , url('static/images/s.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/waste_segregation'"
+                                                style="background-color: #5b575f">
+                                                <div class="card-title">Waste Segregated</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-recycle"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.981a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.545 4.454a.5.5 0 0 0 .434.748H5a.5.5 0 0 1 0 1H1.723A1.5 1.5 0 0 1 .421 12.24zm10.89 1.463a.5.5 0 1 0-.868.496l1.716 3.004a.5.5 0 0 1-.434.748h-5.57l.647-.646a.5.5 0 1 0-.708-.707l-1.5 1.5a.5.5 0 0 0 0 .707l1.5 1.5a.5.5 0 1 0 .708-.707l-.647-.647h5.57a1.5 1.5 0 0 0 1.302-2.244z" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['waste_segregated'])
+                                                        }}
+                                                        kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card">Waste Segregated Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['waste_segregated'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Waste Unsegregated Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #995028; background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/u.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/waste_unsegregation'"
+                                                style="background-color: #995028">
+                                                <div class="card-title">Waste Unsegregated</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                            <path
+                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['waste_unsegregated'])
+                                                        }}
+                                                        kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card">Waste Unsegregated Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['waste_unsegregated'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Flight Card -->
+                                    <div class="col mb-1">
+                                        <div class="card bg-dark text-white h-100" style=" background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/fl.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/flight_emissions'"
+                                                style="background-color:#1e1e1eb8">
+                                                <div class="card-title">Flight</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-airplane"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849m.894.448C7.111 2.02 7 2.569 7 3v4a.5.5 0 0 1-.276.447l-5.448 2.724a.5.5 0 0 0-.276.447v.792l5.418-.903a.5.5 0 0 1 .575.41l.5 3a.5.5 0 0 1-.14.437L6.708 15h2.586l-.647-.646a.5.5 0 0 1-.14-.436l.5-3a.5.5 0 0 1 .576-.411L15 11.41v-.792a.5.5 0 0 0-.276-.447L9.276 7.447A.5.5 0 0 1 9 7V3c0-.432-.11-.979-.322-1.401C8.458 1.159 8.213 1 8 1s-.458.158-.678.599" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['flight']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card"> Accommodation Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['flight'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accommodation Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #9069bc; background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/a.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/accommodation_emissions'"
+                                                style="background-color: #9069bc">
+                                                <div class="card-title">Accommodation</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span
+                                                        style="font-size: 1.2rem; font-weight: bold; color: rgb(255, 255, 255);">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-journals"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2 2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2" />
+                                                            <path
+                                                                d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0" />
+                                                        </svg>
+                                                        {{ "{:,.2f}".format(current_emission_data['accommodation']) }}
+                                                        kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card"> Accommodation Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['accommodation'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Food Waste Card -->
+                                    <div class="col mb-1">
+                                        <div class="card text-white h-100" style="background-color: #28995b; background-image: linear-gradient(
+                                                rgba(0, 0, 0, 0.2),
+                                                rgba(0, 0, 0, 0.2)
+                                              ) ,url('static/images/fw.jpg')">
+                                            <div class="card-body"
+                                                onclick="window.location.href='report/food_consumption'"
+                                                style="background-color: #28995b">
+                                                <div class="card-title">Food Waste</div>
+                                                <!-- Horizontal Divider -->
+                                                <hr
+                                                    style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                                <div><strong>Current Emission:</strong>
+                                                    <span
+                                                        style="font-size: 1.2rem; font-weight: bold; color: rgb(255, 255, 255);">
+                                                        <br>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                            fill="currentColor" class="bi bi-cup-hot-fill"
+                                                            viewBox="0 0 16 16">
+                                                            <path fill-rule="evenodd"
+                                                                d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5" />
+                                                            <path
+                                                                d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8" />
+                                                        </svg>
+
+                                                        {{ "{:,.2f}".format(current_emission_data['food_waste']) }} kg
+                                                    </span>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong class="bot-card"> Food Records:</strong>
+                                                    <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                                        {{ total_records['food_waste'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!--DUPLICATED--------------------------------------------------------------------------------------------------->
+                    <script>
+                        function expandBox(element) {
+                            document.querySelectorAll('.box2').forEach(box => {
+                                box.classList.remove('active');
+                            });
+                            element.classList.add('active');
+                        }
+
+                        function closeBox(event, btn) {
+                            event.stopPropagation();
+                            btn.parentElement.classList.remove('active');
+                        }
+
+                        function handleSort(value) {
+                            const boxConDiv = document.querySelector('.boxConDiv');
+                            const boxConAll = document.querySelector('.cardConAll');
+
+                            if (value === 'sort_div') {
+                                boxConDiv.style.display = 'flex';
+                                boxConAll.style.display = 'none';
+                            } else if (value === 'sort_all') {
+                                boxConDiv.style.display = 'none';
+                                boxConAll.style.display = 'flex';
+                            }
+                        }
+
+                        // Initialize the view based on the default dropdown value
+                        document.addEventListener('DOMContentLoaded', function () {
+                            handleSort('sort_all');
+                        });
+
+                        const box = document.querySelector('.box2');
+                        let timeoutId; // Variable to store the timeout ID
+
+                        // Add .active class on click
+                        box.addEventListener('click', () => {
+                            box.classList.add('active');
+                        });
+
+                        // Remove .active class 1 second after mouse leaves the element
+                        box.addEventListener('mouseleave', () => {
+                            // Clear any existing timeout to avoid conflicts
+                            if (timeoutId) {
+                                clearTimeout(timeoutId);
+                            }
+
+                            // Set a new timeout to remove .active after 1 second
+                            timeoutId = setTimeout(() => {
+                                box.classList.remove('active');
+                            }, 1000); // 1000 milliseconds = 1 second
+                        });
+
+                        // Optional: Cancel the timeout if the user hovers back before 1 second
+                        box.addEventListener('mouseenter', () => {
+                            if (timeoutId) {
+                                clearTimeout(timeoutId); // Cancel the timeout
+                            }
+                        });
+                    </script>
+
+                    <div class="row row-cols-1 row-cols-md-5 g-4 cardConAll" style="margin: 5px 0px; display: flex;">
+                        <!-- Fuel Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #b74343; background-image: linear-gradient(
+                                rgba(0, 0, 0, 0.2),
+                                rgba(0, 0, 0, 0.2)
+                              ) , url('static/images/f.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/fuel_emissions'"
+                                    style="background-color: #b74343;">
+                                    <div class="card-title">
+                                        Fuel
+                                    </div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                viewBox="0 0 512 512" style="color:white">
+                                                <path fill="white"
+                                                    d="M32 64C32 28.7 60.7 0 96 0L256 0c35.3 0 64 28.7 64 64l0 192 8 0c48.6 0 88 39.4 88 88l0 32c0 13.3 10.7 24 24 24s24-10.7 24-24l0-154c-27.6-7.1-48-32.2-48-62l0-64L384 64c-8.8-8.8-8.8-23.2 0-32s23.2-8.8 32 0l77.3 77.3c12 12 18.7 28.3 18.7 45.3l0 13.5 0 24 0 32 0 152c0 39.8-32.2 72-72 72s-72-32.2-72-72l0-32c0-22.1-17.9-40-40-40l-8 0 0 144c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32L32 64zM96 80l0 96c0 8.8 7.2 16 16 16l128 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16L112 64c-8.8 0-16 7.2-16 16z"
+                                                    stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['fuel']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3    ">
+                                        <strong class="bot-card">Fuel Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['fuel'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- <a class="small text-white stretched-link" href="sdo_fuel_emissions_report"></a> -->
+                            </div>
+                        </div>
+
+                        <!-- LPG Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #c79247; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/l.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/lpg_consumption'"
+                                    style="background-color: #c79247">
+                                    <div class="card-title">LPG</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr
+                                        style="margin-bottom:1px; border-top: 2px solid rgb(255, 255, 255); opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-fire" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['lpg']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> LPG Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['lpg'] }}
+                                        </span>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Electricity Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100 position-relative" style="background-color: #bcbc3d; background-image:linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) , url('static/images/e.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/electricity'"
+                                    style="background-color: #bcbc3d;">
+                                    <div class="card-title" style="opacity: 2;">
+                                        Electricity
+                                    </div>
+
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div>
+                                        <strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-ev-front" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M9.354 4.243a.19.19 0 0 0-.085-.218.186.186 0 0 0-.23.034L6.051 7.246a.188.188 0 0 0 .136.316h1.241l-.673 2.195a.19.19 0 0 0 .085.218c.075.043.17.03.23-.034l2.88-3.187a.188.188 0 0 0-.137-.316H8.572z" />
+                                                <path
+                                                    d="M4.819 2A2.5 2.5 0 0 0 2.52 3.515l-.792 1.848a.8.8 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 8.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V13.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413q0-.248-.049-.49l-.335-1.68a1.8 1.8 0 0 0-.964-1.261.8.8 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 2H4.82ZM3.44 3.91A1.5 1.5 0 0 1 4.82 3h6.362a1.5 1.5 0 0 1 1.379.91l.792 1.847a1.8 1.8 0 0 0 .853.904c.222.112.381.32.43.564l.336 1.679q.03.146.029.294v.413a1.48 1.48 0 0 1-1.408 1.484c-1.555.07-3.786.155-5.592.155s-4.037-.084-5.592-.155A1.48 1.48 0 0 1 1 9.611v-.413q0-.148.03-.294l.335-1.68a.8.8 0 0 1 .43-.563c.383-.19.685-.511.853-.904z"
+                                                    stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['electricity']) }} kg
+                                        </span>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <strong class="bot-card">Electricity Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['electricity'] }}
+                                        </span>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Water Consumption Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100 " style="background-color: #289999; background-image:linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) , url('static/images/w.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/water_consumption'"
+                                    style="background-color: #289999">
+                                    <div class="card-title">
+
+                                        Water Consumption</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-droplet" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
+                                                    stroke="currentColor" stroke-width="1.5" />
+                                                <path fill-rule="evenodd"
+                                                    d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z"
+                                                    stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['water']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+
+                                        <strong class="bot-card">Water Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['water'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Treated Water Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #285b99; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/t.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/treated_water'"
+                                    style="background-color: #285b99">
+                                    <div class="card-title">Treated Water</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-droplet" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"
+                                                    stroke="currentColor" stroke-width="0.2" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['treated_water']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card">Treated Water Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['treated_water'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Waste Segregated Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #5b575f; background-image:linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) , url('static/images/s.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/waste_segregation'"
+                                    style="background-color: #5b575f">
+                                    <div class="card-title">Waste Segregated</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-recycle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.981a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.545 4.454a.5.5 0 0 0 .434.748H5a.5.5 0 0 1 0 1H1.723A1.5 1.5 0 0 1 .421 12.24zm10.89 1.463a.5.5 0 1 0-.868.496l1.716 3.004a.5.5 0 0 1-.434.748h-5.57l.647-.646a.5.5 0 1 0-.708-.707l-1.5 1.5a.5.5 0 0 0 0 .707l1.5 1.5a.5.5 0 1 0 .708-.707l-.647-.647h5.57a1.5 1.5 0 0 0 1.302-2.244z" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['waste_segregated'])
+                                            }}
+                                            kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card">Waste Segregated Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['waste_segregated'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Waste Unsegregated Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #995028; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/u.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/waste_unsegregation'"
+                                    style="background-color: #995028">
+                                    <div class="card-title">Waste Unsegregated</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                <path
+                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['waste_unsegregated'])
+                                            }}
+                                            kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card">Waste Unsegregated Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['waste_unsegregated'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flight Card -->
+                        <div class="col mb-1">
+                            <div class="card bg-dark text-white h-100" style=" background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/fl.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/flight_emissions'"
+                                    style="background-color:#1e1e1eb8">
+                                    <div class="card-title">Flight</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-airplane" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849m.894.448C7.111 2.02 7 2.569 7 3v4a.5.5 0 0 1-.276.447l-5.448 2.724a.5.5 0 0 0-.276.447v.792l5.418-.903a.5.5 0 0 1 .575.41l.5 3a.5.5 0 0 1-.14.437L6.708 15h2.586l-.647-.646a.5.5 0 0 1-.14-.436l.5-3a.5.5 0 0 1 .576-.411L15 11.41v-.792a.5.5 0 0 0-.276-.447L9.276 7.447A.5.5 0 0 1 9 7V3c0-.432-.11-.979-.322-1.401C8.458 1.159 8.213 1 8 1s-.458.158-.678.599" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['flight']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> Accommodation Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['flight'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accommodation Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #9069bc; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/a.jpg')">
+                                <div class="card-body"
+                                    onclick="window.location.href='report/accommodation_emissions'"
+                                    style="background-color: #9069bc">
+                                    <div class="card-title">Accommodation</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: rgb(255, 255, 255);">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-journals" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2 2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2" />
+                                                <path
+                                                    d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0" />
+                                            </svg>
+                                            {{ "{:,.2f}".format(current_emission_data['accommodation']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> Accommodation Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['accommodation'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Food Waste Card -->
+                        <div class="col mb-1">
+                            <div class="card text-white h-100" style="background-color: #28995b; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/fw.jpg')">
+                                <div class="card-body" onclick="window.location.href='report/food_consumption'"
+                                    style="background-color: #28995b">
+                                    <div class="card-title">Food Waste</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.2rem; font-weight: bold; color: rgb(255, 255, 255);">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-cup-hot-fill" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5" />
+                                                <path
+                                                    d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8" />
+                                            </svg>
+
+                                            {{ "{:,.2f}".format(current_emission_data['food_waste']) }} kg
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> Food Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_records['food_waste'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <br>
+                    <br>
+                </div>
+
+                <style>
+                    /* Animation for bounce effect */
+                    @keyframes bounce {
+
+                        0%,
+                        20%,
+                        50%,
+                        80%,
+                        100% {
+                            transform: translateY(0);
+                        }
+
+                        40% {
+                            transform: translateY(-10px);
+                        }
+
+                        60% {
+                            transform: translateY(-5px);
+                        }
+                    }
+                </style>
+
+                <br>
+                <br>
+
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let currentPath = window.location.pathname;
+                let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute("href") === currentPath) {
+                        link.classList.add("active");
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let currentPath = window.location.pathname;
+                let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute("href") === currentPath) {
+                        link.classList.add("active");
+
+                        // If the link is inside a dropdown, open the dropdown
+                        let parentCollapse = link.closest(".collapse");
+                        if (parentCollapse) {
+                            parentCollapse.classList.add("show");
+                            let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                            if (dropdownToggle) {
+                                dropdownToggle.classList.add("active");
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let currentPath = window.location.pathname;
+                let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute("href") === currentPath) {
+                        link.classList.add("active");
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let currentPath = window.location.pathname;
+                let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute("href") === currentPath) {
+                        link.classList.add("active");
+
+                        // If the link is inside a dropdown, open the dropdown
+                        let parentCollapse = link.closest(".collapse");
+                        if (parentCollapse) {
+                            parentCollapse.classList.add("show");
+                            let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                            if (dropdownToggle) {
+                                dropdownToggle.classList.add("active");
+                            }
+                        }
+                    }
+                });
+            });
+        </script>

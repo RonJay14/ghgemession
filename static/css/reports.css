@@ -1,0 +1,612 @@
+
+        
+        .topnav-table {
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+
+        .dropdown,
+        .mb-4 {
+            display: flex;
+            align-items: center;
+        }
+        .dropdown{
+            z-index: 5;
+        }
+
+
+        /* Main dropdown button */
+        .btn-primary {
+            background-color: #f44336;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            padding: 0px !important;
+            min-width: 220px;
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: visible;
+        }
+
+        /* Submenu (Nested Dropdown) */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu .dropdown-menu {
+            top: 0;
+            left: 100%;
+            display: none;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Enables vertical scrolling */
+            overflow-x: hidden;
+            /* Prevents horizontal scrolling */
+            width: 250px;
+            /* Adjust width as needed */
+        }
+
+        /* Show submenu on hover */
+        .dropdown-submenu:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Styling dropdown items */
+        .dropdown-item {
+            padding: 10px 15px;
+            font-size: 14px;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #f44336;
+        }
+
+        /* Active state */
+        .dropdown-item.active {
+            background-color: #f44336 !important;
+            color: #fff !important;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        /* Fix submenu positioning */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Modern Color Scheme */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #1abc9c;
+            --background-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+            scrollbar-width: none;
+
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+
+        .sb-topnav .navbar-nav .nav-item .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+        }
+
+        .sb-topnav .navbar-nav .nav-item .nav-link i {
+            margin-right: 5px;
+        }
+
+        .sb-sidenav-menu {
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        #layoutSidenav_nav .sb-sidenav-menu {
+            max-height: 90vh;
+            /* Adjust this value to set your desired height */
+            overflow-y: auto;
+        }
+
+
+        /* Print-Specific Styling */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+
+            /* Reduce font size and padding to fit more content on the page */
+            body,
+            table {
+                font-size: 10px;
+            }
+
+            th,
+            td {
+                padding: 4px;
+            }
+
+            /* Ensure table and content fit within the printable area */
+            table {
+                width: 100%;
+                max-width: 100%;
+                border: 1px solid #000;
+            }
+
+            /* Avoid breaking inside table rows */
+            tr,
+            td,
+            th {
+                page-break-inside: avoid;
+            }
+
+            /* Hide non-printable elements */
+            #printReportBtn,
+          
+            .filter-container,
+            .sb-topnav,
+            #layoutSidenav_nav {
+                display: none;
+            }
+
+            /* Remove extra margins and padding around the main content */
+            .container-fluid {
+                padding: 0;
+                margin: 0;
+            }
+
+            /* Header for report title */
+            #reportHeader {
+                text-align: center;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            /* Footer for page numbers */
+            .page-footer {
+                text-align: center;
+                font-size: 10px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            #exportToExcelBtn {
+                display: none;
+            }
+        }
+    /* ----------------------------------------------------------------- */
+
+    html{
+        scrollbar-width: none;
+    }
+    /* 🌟 General Table Styling */
+    .table-wrapper {
+        position: relative !important;
+        background-color: #ffffff !important;
+    }
+
+    .table-container > .table-wrapper {
+        border-radius: 12px !important;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-size: 0.9rem !important;
+        table-layout: fixed; /* Add this */
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #2b3e53, #2b3e53) !important;
+        color: #fff !important;
+    }
+
+    .table thead th {
+        padding: 15px 20px !important; /* Adjust padding as needed */
+        text-align: center !important;
+        font-weight: 6500 !important;
+        letter-spacing: 0.5px !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        width: 175px !important;
+        vertical-align: middle; /* Vertically align the text */
+        box-sizing: border-box;
+        white-space: nowrap; /* Prevent text wrapping */
+        overflow: hidden; /* Hide overflowing text */
+        text-overflow: ellipsis; /* Show ellipsis (...) for overflowing text */
+        font-size: clamp(0.7rem, 1rem, 1rem); /* Adjust font size based on content length */
+        position: relative; /* Required for the tooltip */
+        font-size: large;
+    }
+    .custom-tooltip {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        z-index: 1000; /* Ensure it's on top */
+        margin: auto;
+        margin-top: -5px;
+    }
+    .table thead th > * {
+        margin: 0;
+    }
+
+    .table thead th:last-child {
+        border-right: none !important;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s ease transform 0.1s ease !important;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f5faff !important;
+        transform: scale(1.01) !important;
+    }
+
+    .table tbody td {
+        padding: 15px 20px !important; /* Reduced padding */
+        text-align: center !important;
+        border-top: 1px solid #e0e0e0 !important;
+        background-color: #efefef93;
+        font-size: medium;
+    }
+
+    .table tbody tr:nth-child(even) td {
+        background-color: #adb5bd62 !important;
+    }
+
+    /* removed the width: 200px from here, and added width to all th*/
+
+    .table-container {
+        border-radius: 20px;
+        position: relative !important;
+        max-width: 100vw !important;
+        padding: 20px 20px !important;
+        scrollbar-width: none !important;
+    }
+
+    .scrollable-content {
+        border-radius: 10px;
+
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        position: relative !important;
+        width: 100%;
+    }
+
+    /* ✨ Scrollbar Styling */
+    .scrollable-content::-webkit-scrollbar {
+        height: 8px !important;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+        background-color: #2b3e53 !important;
+        border-radius: 10px !important;
+    }
+
+    .scrollable-content::-webkit-scrollbar-track {
+        background: #eaeaea !important;
+        border-radius: 10px !important;
+    }
+
+    /* 🎨 Fade Effects */
+    .fade-overlay {
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 200px !important;
+        pointer-events: none !important;
+        transition: opacity 0.3s ease !important;
+        z-index: 2 !important;
+    }
+
+    .fade-left {
+        left: 0 !important;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)) !important;
+        opacity: 0 !important;
+    }
+
+    .fade-right {
+        right: 0 !important;
+        background: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)) !important;
+        opacity: 1 !important;
+    }
+
+    .fade-overlay.visible {
+        opacity: 1 !important;
+    }
+
+    .fade-overlay.hidden {
+        opacity: 0 !important;
+    }
+
+    /* 🡄🡆 Arrow Styling */
+    .scroll-arrow {
+        position: absolute !important;
+        top: 40% !important;
+        transform: translateY(-50%) !important;
+        font-size: 30px !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-weight: bold !important;
+        color: #2b3e53 !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        z-index: 3 !important;
+        opacity: 0 !important;
+        transition: opacity 0.3s ease background-color 0.2s ease !important;
+        pointer-events: none !important;
+    }
+
+    .scroll-arrow.visible {
+        opacity: 1 !important;
+    }
+
+    .scroll-arrow-left {
+        left: 10px !important;
+    }
+
+    .scroll-arrow-right {
+        right: 10px !important;
+    }
+
+    .pagination-container {
+        margin-top:20px
+    }
+
+/* -------------------------------------------------------------------------------------------------- */
+
+                        /* Modal backdrop with a blur effect */
+                        .modal {
+                            display: none;
+                            position: fixed;
+                            z-index: 15;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            height: 100%;
+                            overflow: auto;
+                            background-color: rgba(0, 0, 0, 0.7);
+                            backdrop-filter: blur(10px); /* Adds a blur effect to the background */
+                        }
+                    
+                        /* Modal content with glass morphism effect */
+                        .modal-content {
+                            background-color: rgb(222, 229, 239); /* Semi-transparent white */
+                            margin: 5% auto;
+                            padding: 30px;
+                            border-radius: 15px;
+                            width: 50%;
+                            max-width: 600px;
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                            border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle border for glass effect */
+                            backdrop-filter: blur(10px); /* Enhances the glass morphism effect */
+                            animation: slideIn 0.5s ease-out; /* Smooth slide-in animation */
+                        }
+                    
+                        /* Keyframes for slide-in animation */
+                        @keyframes slideIn {
+                            from {
+                                transform: translateY(-50px);
+                                opacity: 0;
+                            }
+                            to {
+                                transform: translateY(0);
+                                opacity: 1;
+                            }
+                        }
+                    
+                        /* Close button with a modern look */
+                        .close {
+                            color: #aaa;
+                            float: right;
+                            font-size: 28px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .close:hover {
+                            color: #ff4757; /* Vibrant red for hover */
+                        }
+                    
+                        /* Form container styling */
+                        .form-container {
+                            max-width: 100%;
+                            margin: 0 auto;
+                        }
+                    
+                        /* Form group styling */
+                        .form-group {
+                            margin-bottom: 20px;
+                        }
+                    
+                        /* Input and select fields with a modern look */
+                        .form-control {
+                            height: max-content;
+                            width: 100%;
+                            padding: 12px;
+                            border: 1px solid rgba(0, 0, 0, 0.1);
+                            border-radius: 8px;
+                            font-size: 16px;
+                            background-color: rgba(255, 255, 255, 0.9);
+                            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                        }
+                    
+                        .form-control:focus {
+                            border-color: #007bff;
+                            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+                            outline: none;
+                        }
+                    
+                        /* Buttons with gradient and hover effects */
+                        .btn-calculate, .btn-generate {
+                            width: 100%;
+                            padding: 12px;
+                            background: linear-gradient(135deg, #007bff, #00bfff); /* Gradient background */
+                            color: #fff;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            cursor: pointer;
+                            transition: background 0.3s ease, transform 0.2s ease;
+                        }
+                    
+                        .btn-calculate:hover, .btn-generate:hover {
+                            background: linear-gradient(135deg, #0056b3, #0099cc); /* Darker gradient on hover */
+                            transform: translateY(-2px); /* Slight lift effect */
+                        }
+                    
+                        /* GHG emission container with a futuristic card look */
+                        .ghg-emission-container {
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin: 20px 0;
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                        }
+                    
+                        .ghg-emission-container h4 {
+                            color: #2c3f54;
+                            font-weight: 600;
+                            margin-bottom: 15px;
+                        }
+                    
+                        /* Style specifically for emission input fields */
+                        .ghg-emission-container .form-group {
+                            margin-bottom: 15px;
+                        }
+                    
+                        .ghg-emission-container label {
+                            display: block;
+                            margin-bottom: 8px;
+                            color: #2c3f54;
+                            font-weight: 500;
+                        }
+                    
+                        .ghg-emission-container .form-control {
+                            background-color: rgba(255, 255, 255, 0.9);
+                            border: 1px solid rgba(44, 63, 84, 0.2);
+                            transition: all 0.3s ease;
+                        }
+                    
+                        .ghg-emission-container .form-control:focus {
+                            border-color: #2c3f54;
+                            box-shadow: 0 0 8px rgba(44, 63, 84, 0.2);
+                            background-color: #ffffff;
+                        }
+                    
+                        /* Add a subtle hover effect */
+                        .ghg-emission-container .form-control:hover {
+                            background-color: #ffffff;
+                        }
+                    
+                        /* Responsive adjustments */
+                        @media (max-width: 768px) {
+                            .modal-content {
+                                width: 90%;
+                                padding: 20px;
+                            }
+                        }
+                    

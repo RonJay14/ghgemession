@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Food Consumption Report</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/CSD.png') }}" type="image/x-icon">
+
+    <!-- ✅ Bootstrap 4 CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ✅ Font Awesome (For Icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- ✅ Custom CSS -->
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/reports.css') }}" rel="stylesheet">
+
+    <!-- ✅ jQuery (MUST be first, before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- ✅ Popper.js (Required for Bootstrap dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- ✅ Bootstrap 4 JS (Only one version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ✅ PDF & HTML to PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
+
+
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark"
+        style="padding-left: 45px; height: 80px; padding-bottom: 15px; padding-top: 10px;">
+        <img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}"
+            alt="Campus Logo" height="75" class="me-2">
+        <!-- Navbar brand -->
+        <a class="navbar-brand ps-3" href="{{ url_for('csd_dashboard') }}">CSD <span
+                style="text-transform: uppercase; font-style: italic;">{{
+                session['campus'] }} REPORT</span></a>
+        <!-- Spacer to push "Sign-out" to the right -->
+        <div class="ms-auto"></div>
+
+        <!-- Sign-out Icon and Link -->
+        <!--<ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">
+                <i class="fas fa-power-off fa-fw"></i> Sign-out
+            </a>
+        </li>
+    </ul>-->
+    </nav>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Record</h5>
+                    <button type="button" class="close" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateForm">
+                        <div id="formFields" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Dynamically generated fields will appear here -->
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/table_actions.js') }}"></script>
+
+
+    <!-- Sidebar and Main Content Layout -->
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading"></div>
+                        <a class="nav-link" href="{{ url_for('csd_dashboard') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Report
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('electricity_report') }}">Electricity Report</a>
+                                <a class="nav-link" href="{{ url_for('fuel_emissions_report') }}">Fuel Emissions
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('water_report') }}">Water Consumption Report</a>
+                                <a class="nav-link" href="{{ url_for('treated_water_report') }}">Treated Water
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('waste_segregation_report') }}">Waste Segregation
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('waste_unseg_report') }}">Waste Unsegregation
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('food_consumption_report') }}">Food Consumption
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('lpg_consumption_report') }}">LPG Consumption
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('flight_emissions_report') }}">Flight Emissions
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('accommodation_emissions_report') }}">Accommodation
+                                    Emissions Report</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                            Analytics
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('csdanalytics') }}">Emission Trends</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="{{ url_for('manage_account') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                            Manage Account
+                        </a>
+                        <a class="nav-link" href="{{ url_for('csd') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                            User's Guide
+                        </a>
+                        <div class="logout-container">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-power-off fa-fw"></i> Sign-out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4" style="background-color: rgb(255, 255, 255);">
+                    <h2 class="fw-bold text-uppercase border-bottom border-3 pb-2 text-center fs-1 pt-5"
+                        style="border-color: #2c3f54;">Food Consumption Report</h2>
+
+
+                    {% if data %}
+                    <div class="table-container" style="padding:auto">
+                        <div class="table-wrapper">
+
+                            <!-- Topnav Table (Filters & Download Button) -->
+                            <div class="topnav-table d-flex align-items-center justify-content-between px-3 py-2"
+                                style="padding-top: 20px !important;">
+                                <!-- Filter Dropdown -->
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle px-4 py-2" type="button" id="filterDropdown"
+                                        data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2c3f54;">
+                                        <i class="fas fa-filter"></i> Filter Options
+                                    </button>
+                                    <ul class="dropdown-menu p-2 shadow-lg rounded-3" aria-labelledby="filterDropdown">
+                                        <!-- Campus -->
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item dropdown-toggle" href="#">Campus</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item {% if selected_campus == '' %}active{% endif %}"
+                                                        href="?campus=">All Campuses</a></li>
+                                                {% for campus in ["Alangilan", "ARASOF-Nasugbu", "Balayan", "Central",
+                                                "JPLPC-Malvar",
+                                                "Lemery", "Lipa", "Lobo", "Mabini", "Pablo Borbon", "Rosario", "San
+                                                Juan"] %}
+                                                <li><a class="dropdown-item {% if campus == selected_campus %}active{% endif %}"
+                                                        href="?campus={{ campus }}">{{ campus }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+
+                                        <!-- Year -->
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item dropdown-toggle" href="#">Year</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item {% if year == '' %}active{% endif %}"
+                                                        href="?year=">All Years</a></li>
+                                                {% for y in range(2025, 2013, -1) %}
+                                                <li><a class="dropdown-item {% if year == y|string %}active{% endif %}"
+                                                        href="?year={{ y }}">{{ y }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+
+                                        <!-- Month -->
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item dropdown-toggle" href="#">Month</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item {% if selected_campus == '' %}active{% endif %}"
+                                                        href="?campus=">All Campuses</a></li>
+                                                {% for campus in ["Alangilan", "ARASOF-Nasugbu", "Balayan", "Central",
+                                                "JPLPC-Malvar",
+                                                "Lemery", "Lipa", "Lobo", "Mabini", "Pablo Borbon", "Rosario", "San
+                                                Juan"] %}
+                                                <li><a class="dropdown-item {% if campus == selected_campus %}active{% endif %}"
+                                                        href="?campus={{ campus }}">{{ campus }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+
+                                        <!-- Office -->
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item dropdown-toggle" href="#">Office</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item {% if office == '' %}active{% endif %}"
+                                                        href="?office=">All Offices</a></li>
+                                                {% for office_name in ["IAU", "QAM", "SDO", "PDO", "EA", "RGO", "ICT",
+                                                "CAS", "CABE",
+                                                "CICS", "CET", "CTE", "CE", "CA", "TAO", "ORS", "SFAO", "GC",
+                                                "OLS", "SOO", "SD", "OJT", "NSTP", "HRMO", "RMO", "PO", "BO",
+                                                "CD", "AO", "PFMO", "EMU", "PSO", "GSO", "ESO", "RO", "OVCRDES",
+                                                "OVCDEA", "OVCAA", "OVCAF"] %}
+                                                <li><a class="dropdown-item {% if office == office_name %}active{% endif %}"
+                                                        href="?office={{ office_name }}">{{ office_name }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+
+                                        <!-- Food Type -->
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item dropdown-toggle" href="#">Food Type</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item {% if food_type == '' %}active{% endif %}"
+                                                        href="?{% if selected_campus %}campus={{ selected_campus }}&{% endif %}{% if year %}year={{ year }}&{% endif %}{% if month %}month={{ month }}&{% endif %}{% if office %}office={{ office }}&{% endif %}">All
+                                                        Food Types</a></li>
+                                                {% set types = [] %}
+                                                {% for record in data %}
+                                                {% if record.TypeOfFoodServed not in types %}
+                                                {% set _ = types.append(record.TypeOfFoodServed) %}
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% for type in types|sort %}
+                                                <li><a class="dropdown-item {% if food_type == type %}active{% endif %}"
+                                                        href="?{% if selected_campus %}campus={{ selected_campus }}&{% endif %}{% if year %}year={{ year }}&{% endif %}{% if month %}month={{ month }}&{% endif %}{% if office %}office={{ office }}&{% endif %}food_type={{ type }}">{{
+                                                        type }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Download Report Button -->
+                                <div class="dropdown">
+                                    <div class="dropdown  col-sm">
+                                        <button class="btn dropdown-toggle px-4 py-2" type="button"
+                                            id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="border-color: #2c3f54;">
+                                            <i class="fas fa-ellipsis-h"></i> Actions
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="openCalculatorModal(); return false;">
+                                                    Calculate</a></li>
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="printFoodReport(); return false;">
+                                                    Print Report</a></li>
+                                        </ul>
+                                    </div>
+                                    <button class="btn dropdown-toggle px-4 py-2" type="button" id="downloadDropdown"
+                                        data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2c3f54;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="downloadPDF()"><i
+                                                    class="far fa-file-pdf"></i>Download PDF</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="downloadExcel()"><i
+                                                    class="far fa-file-excel"></i> Download Excel</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="downloadCSV()"><i
+                                                    class="far fa-file-csv"></i> Download CSV</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- ------------------------------------------------------------------------------------------------------ -->
+                            <div class="table-container">
+                                <div class="fade-overlay fade-left" id="fadeLeft"></div>
+                                <div class="fade-overlay fade-right" id="fadeRight"></div>
+                                <!-- 🚀 Left Arrow -->
+                                <div class="scroll-arrow scroll-arrow-left" id="arrowLeft">
+                                    &#9664; <!-- Unicode left arrow -->
+                                </div>
+
+                                <!-- 🚀 Right Arrow -->
+                                <div class="scroll-arrow scroll-arrow-right" id="arrowRight">
+                                    &#9654; <!-- Unicode right arrow -->
+                                </div>
+                                <div class="scrollable-content" id="scrollableContent">
+
+                                    <div class="table-wrapper">
+                                        <table class="table" id="food_data" data-table-name="tblfoodwaste">
+                                            <thead>
+                                                <tr>
+                                                    <th>Campus</th>
+                                                    <th>Year</th>
+                                                    <th>Month</th>
+                                                    <th>Office</th>
+                                                    <th>Food Type</th>
+                                                    <th>Servings</th>
+                                                    <th>GHG Emission (KG CO₂e)</th>
+                                                    <th>GHG Emission (T CO₂e)</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for record in data %}
+                                                <tr data-id="{{ record['id'] }}">
+                                                    <td data-column="Campus">{{ record.Campus }}</td>
+                                                    <td data-column="YearTransaction">{{ record.YearTransaction }}</td>
+                                                    <td data-column="Month">{{ record.Month }}</td>
+                                                    <td data-column="Office">{{ record.Office }}</td>
+                                                    <td data-column="TypeOfFoodServed">{{ record.TypeOfFoodServed }}
+                                                    </td>
+                                                    <td data-column="QuantityOfServing">{{ record.QuantityOfServing }}
+                                                    </td>
+                                                    <td data-column="GHGEmissionKGCO2e">{{ record.GHGEmissionKGCO2e }}
+                                                    </td>
+                                                    <td data-column="GHGEmissionTCO2e">{{ record.GHGEmissionTCO2e }}
+                                                    </td>
+                                                    <!-- Replace the existing Actions column in your table -->
+                                                    <td>
+                                                        <div class="d-flex justify-content-center gap-2">
+                                                            <!-- Edit Button -->
+                                                            <button type="button" class="btn btn-link p-0 update-btn"
+                                                                data-id="{{ record['id'] }}"
+                                                                style="background-color: transparent; border: none;">
+                                                                <i class="fas fa-edit" style="color: #0d6efd;"></i>
+                                                            </button>
+
+                                                            <!-- Delete Button -->
+                                                            <button type="button" class="btn btn-link p-0 delete-btn"
+                                                                data-id="{{ record['id'] }}"
+                                                                style="background-color: transparent; border: none;">
+                                                                <i class="fas fa-trash" style="color: #dc3545;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+
+                                                    <!-- Add this CSS to your <style> section -->
+                                                    <style>
+                                                        /* Action buttons styling */
+                                                        .d-flex.gap-2 {
+                                                            gap: 0.5rem !important;
+                                                        }
+
+                                                        .btn-link {
+                                                            padding: 0 !important;
+                                                            margin: 0 !important;
+                                                            line-height: 1;
+                                                        }
+
+                                                        .btn-link:hover {
+                                                            opacity: 0.7;
+                                                        }
+
+                                                        .btn-link:focus {
+                                                            box-shadow: none !important;
+                                                        }
+
+                                                        /* Icons */
+                                                        .fas {
+                                                            font-size: 0.875rem;
+                                                        }
+
+                                                        .fa-pencil-alt {
+                                                            color: #1a73e8 !important;
+                                                        }
+
+                                                        .fa-trash {
+                                                            color: #dc3545 !important;
+                                                        }
+                                                    </style>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                const arrowLeft = document.getElementById("arrowLeft");
+                                const arrowRight = document.getElementById("arrowRight");
+
+                                function updateFadeVisibility() {
+                                    const { scrollLeft, scrollWidth, clientWidth } = scrollableContent;
+
+                                    const showLeft = scrollLeft > 0;
+                                    const showRight = scrollLeft < scrollWidth - clientWidth - 1;
+
+                                    // 🌟 Fade visibility
+                                    fadeLeft.classList.toggle("visible", showLeft);
+                                    fadeLeft.classList.toggle("hidden", !showLeft);
+                                    fadeRight.classList.toggle("visible", showRight);
+                                    fadeRight.classList.toggle("hidden", !showRight);
+
+                                    // 🡄🡆 Arrow visibility (same condition as fades)
+                                    arrowLeft.classList.toggle("visible", showLeft);
+                                    arrowRight.classList.toggle("visible", showRight);
+                                }
+
+                                scrollableContent.addEventListener("scroll", updateFadeVisibility);
+                                window.addEventListener("resize", updateFadeVisibility);
+                                document.addEventListener("DOMContentLoaded", updateFadeVisibility);
+
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const thElements = document.querySelectorAll('.table thead th');
+
+                                    thElements.forEach(th => {
+                                        th.addEventListener('mouseenter', function () {
+                                            const text = this.textContent.trim();
+                                            if (this.offsetWidth < this.scrollWidth) { // Check if text is truncated
+                                                const tooltip = document.createElement('div');
+                                                tooltip.textContent = text;
+                                                tooltip.classList.add('custom-tooltip');
+                                                document.body.appendChild(tooltip);
+
+                                                const rect = this.getBoundingClientRect();
+                                                tooltip.style.left = rect.left + 'px';
+                                                tooltip.style.top = rect.bottom + 5 + 'px'; // Position below the th
+                                            }
+                                        });
+
+                                        th.addEventListener('mouseleave', function () {
+                                            const tooltip = document.querySelector('.custom-tooltip');
+                                            if (tooltip) {
+                                                tooltip.remove();
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+                            <!-- ------------------------------------------------------------------------------------------------------ -->
+                        </div>
+                        <!-- Pagination -->
+                        <div style="z-index: 4; position: relative;"
+                            class="pagination-container d-flex justify-content-between align-items-center">
+                            <!-- Previous Button -->
+                            <a class="btn btn-dark {% if current_page == 1 %}disabled{% endif %}"
+                                href="{{ url_for('food_consumption_report', page=current_page - 1, campus=request.args.get('campus'), category=request.args.get('category'), month=request.args.get('month'), quarter=request.args.get('quarter'), year=request.args.get('year')) }}">
+                                &lsaquo; Previous
+                            </a>
+
+                            <!-- Page Indicator -->
+                            <span class="page-indicator text-dark">
+                                Page {{ current_page }} of {{ total_pages }}
+                            </span>
+
+                            <!-- Next Button -->
+                            <a class="btn btn-dark {% if current_page == total_pages %}disabled{% endif %}"
+                                href="{{ url_for('food_consumption_report', page=current_page + 1, campus=request.args.get('campus'), category=request.args.get('category'), month=request.args.get('month'), quarter=request.args.get('quarter'), year=request.args.get('year')) }}">
+                                Next &rsaquo;
+                            </a>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <p>No data available for this report.</p>
+                    {% endif %}
+                    <BR>
+                </div>
+            </main>
+        </div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div class="container">
+                    <div class="form-container">
+                        <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Food Consumption CO₂ Emission
+                            Calculator</h2>
+                        <form method="POST" action="{{ url_for('food_consumption_report') }}" id="co2Form">
+                            <div class="form-group">
+                                <label for="campus">Campus:</label>
+                                <select id="campus" name="campus" class="form-control">
+                                    <option value="" {% if not session.get('campus') %}selected{% endif %}></option>
+                                    <option value="Alangilan" {% if session.get('campus')=='Alangilan' %}selected{%
+                                        endif %}>Alangilan</option>
+                                    <option value="ARASOF-Nasugbu" {% if session.get('campus')=='ARASOF-Nasugbu'
+                                        %}selected{% endif %}>ARASOF-Nasugbu</option>
+                                    <option value="Balayan" {% if session.get('campus')=='Balayan' %}selected{% endif
+                                        %}>Balayan</option>
+                                    <option value="Central" {% if session.get('campus')=='Central' %}selected{% endif
+                                        %}>Central</option>
+                                    <option value="JPLPC-Malvar" {% if session.get('campus')=='JPLPC-Malvar'
+                                        %}selected{% endif %}>JPLPC-Malvar</option>
+                                    <option value="Lemery" {% if session.get('campus')=='Lemery' %}selected{% endif %}>
+                                        Lemery</option>
+                                    <option value="Lipa" {% if session.get('campus')=='Lipa' %}selected{% endif %}>Lipa
+                                    </option>
+                                    <option value="Lobo" {% if session.get('campus')=='Lobo' %}selected{% endif %}>Lobo
+                                    </option>
+                                    <option value="Mabini" {% if session.get('campus')=='Mabini' %}selected{% endif %}>
+                                        Mabini</option>
+                                    <option value="Pablo Borbon" {% if session.get('campus')=='Pablo Borbon'
+                                        %}selected{% endif %}>Pablo Borbon</option>
+                                    <option value="Rosario" {% if session.get('campus')=='Rosario' %}selected{% endif
+                                        %}>Rosario</option>
+                                    <option value="San Juan" {% if session.get('campus')=='San Juan' %}selected{% endif
+                                        %}>San Juan</option>
+
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="year">Year:</label>
+                                <select id="year" name="year" required class="form-control">
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2020">2020</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="month">Month:</label>
+                                <select id="month" name="month" required class="form-control">
+                                    <option value=""></option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="office">Office:</label>
+                                <select id="office" name="office" required class="form-control">
+                                    <option value=""></option>
+                                    <option value="Auxillary Services">Auxillary Services</option>
+                                    <option value="RGO">RGO</option>
+                                    <option value="IAU" {% if office=='IAU' %}selected{% endif %}>IAU</option>
+                                    <option value="QAM" {% if office=='QAM' %}selected{% endif %}>QAM</option>
+                                    <option value="SDO" {% if office=='SDO' %}selected{% endif %}>SDO</option>
+                                    <option value="PDO" {% if office=='PDO' %}selected{% endif %}>PDO</option>
+                                    <option value="EA" {% if office=='EA' %}selected{% endif %}>EA</option>
+                                    <option value="ICT" {% if office=='ICT' %}selected{% endif %}>ICT</option>
+                                    <option value="CAS" {% if office=='CAS' %}selected{% endif %}>CAS</option>
+                                    <option value="CABE" {% if office=='CABE' %}selected{% endif %}>CABE</option>
+                                    <option value="CICS" {% if office=='CICS' %}selected{% endif %}>CICS</option>
+                                    <option value="CET" {% if office=='CET' %}selected{% endif %}>CET</option>
+                                    <option value="CTE" {% if office=='CTE' %}selected{% endif %}>CTE</option>
+                                    <option value="CE" {% if office=='CE' %}selected{% endif %}>CE</option>
+                                    <option value="CA" {% if office=='CA' %}selected{% endif %}>CA</option>
+                                    <option value="TAO" {% if office=='TAO' %}selected{% endif %}>TAO</option>
+                                    <option value="ORS" {% if office=='ORS' %}selected{% endif %}>ORS</option>
+                                    <option value="SFAO" {% if office=='SFAO' %}selected{% endif %}>SFAO</option>
+                                    <option value="GC" {% if office=='GC' %}selected{% endif %}>GC</option>
+                                    <option value="OLS" {% if office=='OLS' %}selected{% endif %}>OLS</option>
+                                    <option value="SOO" {% if office=='SOO' %}selected{% endif %}>SOO</option>
+                                    <option value="SD" {% if office=='SD' %}selected{% endif %}>SD</option>
+                                    <option value="OJT" {% if office=='OJT' %}selected{% endif %}>OJT</option>
+                                    <option value="NSTP" {% if office=='NSTP' %}selected{% endif %}>NSTP</option>
+                                    <option value="HRMO" {% if office=='HRMO' %}selected{% endif %}>HRMO</option>
+                                    <option value="RMO" {% if office=='RMO' %}selected{% endif %}>RMO</option>
+                                    <option value="PO" {% if office=='PO' %}selected{% endif %}>PO</option>
+                                    <option value="BO" {% if office=='BO' %}selected{% endif %}>BO</option>
+                                    <option value="CD" {% if office=='CD' %}selected{% endif %}>CD</option>
+                                    <option value="AO" {% if office=='AO' %}selected{% endif %}>AO</option>
+                                    <option value="PFMO" {% if office=='PFMO' %}selected{% endif %}>PFMO</option>
+                                    <option value="EMU" {% if office=='EMU' %}selected{% endif %}>EMU</option>
+                                    <option value="PSO" {% if office=='PSO' %}selected{% endif %}>PSO</option>
+                                    <option value="GSO" {% if office=='GSO' %}selected{% endif %}>GSO</option>
+                                    <option value="ESO" {% if office=='ESO' %}selected{% endif %}>ESO</option>
+                                    <option value="RO" {% if office=='RO' %}selected{% endif %}>RO</option>
+                                    <option value="OVCRDES" {% if office=='OVCRDES' %}selected{% endif %}>OVCRDES
+                                    </option>
+                                    <option value="OVCDEA" {% if office=='OVCDEA' %}selected{% endif %}>OVCDEA</option>
+                                    <option value="OVCAA" {% if office=='OVCAA' %}selected{% endif %}>OVCAA</option>
+                                    <option value="OVCAF" {% if office=='OVCAF' %}selected{% endif %}>OVCAF</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="foodType">Type of Food Served:</label>
+                                <select id="foodType" name="foodType" required class="form-control">
+                                    <option value=""></option>
+                                    <option value="1 Standard Breakfast">1 Standard Breakfast</option>
+                                    <option value="1 Gourmet Breakfast">1 Gourmet Breakfast</option>
+                                    <option value="1 Hot Snack (burger and fries)">1 Hot Snack (burger and fries)
+                                    </option>
+                                    <option value="1 Cold or Hot Snack">1 Cold or Hot Snack</option>
+                                    <option value="1 Sandwich">1 Sandwich</option>
+                                    <option value="1 Average Meal">1 Average Meal</option>
+                                    <option value="Meal,Vegan">Meal,Vegan</option>
+                                    <option value="Meal,Vegetarian">Meal,Vegetarian</option>
+                                    <option value="Meal with Beef">Meal with Beef</option>
+                                    <option value="Meal with Chicken">Meal with Chicken</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="servings">No. of Servings:</label>
+                                <input type="number" id="servings" name="servings" step="0.01" required
+                                    class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <button type="button" onclick="calculateCO2Emission()"
+                                    class="btn-calculate">Calculate</button>
+                            </div>
+
+                            <!-- GHG Emission fields that will be calculated -->
+                            <div class="ghg-emission-container">
+                                <div class="ghg-emission-field">
+                                    <label for="ghgEmissionKg">GHG Emission (KG CO₂e):</label>
+                                    <input type="number" id="ghgEmissionKg" name="ghgEmissionKg" step="0.01" readonly
+                                        class="form-control" value="0.00">
+                                </div>
+                                <div class="ghg-emission-field">
+                                    <label for="ghgEmissionTons">GHG Emission (T CO₂e):</label>
+                                    <input type="number" id="ghgEmissionTons" name="ghgEmissionTons" step="0.01"
+                                        readonly class="form-control" value="0.00">
+                                </div>
+                            </div>
+
+                            <!-- Buttons to calculate and generate report -->
+                            <div class="form-group">
+                                <button type="button" onclick="generateReport()" class="btn-generate">Generate
+                                    Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("campus").addEventListener("mousedown", function (event) { event.preventDefault() });
+    </script>
+    <script>
+
+        // Emission factors based on food type
+        const foodFactors = {
+            "1 Standard Breakfast": 0.84,
+            "1 Gourmet Breakfast": 2.33,
+            "1 Hot Snack (burger and fries)": 2.77,
+            "1 Cold or Hot Snack": 2.02,
+            "1 Sandwich": 1.27,
+            "1 Average Meal": 4.70,
+            "Meal,Vegan": 1.69,
+            "Meal,Vegetarian": 2.85,
+            "Meal with Beef": 6.93,
+            "Meal with Chicken": 3.39
+        };
+
+        // Function to calculate CO2 emissions
+        function calculateCO2Emission() {
+            const foodType = document.getElementById('foodType').value;
+            const servings = parseFloat(document.getElementById('servings').value) || 0;
+
+            const factor = foodFactors[foodType] || 0;
+            const ghgEmissionKgCO2e = servings * factor;
+            const ghgEmissionTCO2e = ghgEmissionKgCO2e / 1000;
+
+            document.getElementById('ghgEmissionKg').value = ghgEmissionKgCO2e.toFixed(2);
+            document.getElementById('ghgEmissionTons').value = ghgEmissionTCO2e.toFixed(2);
+        }
+
+        // Function to submit the form and close the modal
+        function generateReport() {
+            document.getElementById("co2Form").submit();
+            closeModal();
+        }
+
+        // Functions to open and close the modal
+        function openCalculatorModal() {
+            document.getElementById('myModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        function downloadCSV() {
+            // Get all filter values
+            const campus = new URLSearchParams(window.location.search).get('campus') || '';
+            const month = new URLSearchParams(window.location.search).get('month') || '';
+            const year = new URLSearchParams(window.location.search).get('year') || '';
+            const office = new URLSearchParams(window.location.search).get('office') || '';
+            const food_type = new URLSearchParams(window.location.search).get('food_type') || '';
+
+            // Construct the URL with query parameters
+            const url = `/download_food_consumption_csv?campus=${encodeURIComponent(campus)}&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}&office=${encodeURIComponent(office)}&food_type=${encodeURIComponent(food_type)}`;
+
+            // Redirect to the URL to initiate the download
+            window.location.href = url;
+        }
+
+        function downloadExcel() {
+            // Get all filter values
+            const campus = new URLSearchParams(window.location.search).get('campus') || '';
+            const month = new URLSearchParams(window.location.search).get('month') || '';
+            const year = new URLSearchParams(window.location.search).get('year') || '';
+            const office = new URLSearchParams(window.location.search).get('office') || '';
+            const food_type = new URLSearchParams(window.location.search).get('food_type') || '';
+
+            // Construct the URL with query parameters
+            const url = `/download_food_consumption_excel?campus=${encodeURIComponent(campus)}&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}&office=${encodeURIComponent(office)}&food_type=${encodeURIComponent(food_type)}`;
+
+            // Redirect to the URL to initiate the download
+            window.location.href = url;
+        }
+
+        function downloadPDF() {
+            // Get all filter values
+            const campus = new URLSearchParams(window.location.search).get('campus') || '';
+            const month = new URLSearchParams(window.location.search).get('month') || '';
+            const year = new URLSearchParams(window.location.search).get('year') || '';
+            const office = new URLSearchParams(window.location.search).get('office') || '';
+            const food_type = new URLSearchParams(window.location.search).get('food_type') || '';
+
+            // Construct the URL with query parameters
+            const url = `/download_food_consumption_pdf?campus=${encodeURIComponent(campus)}&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}&office=${encodeURIComponent(office)}&food_type=${encodeURIComponent(food_type)}`;
+
+            // Redirect to the URL to initiate the download
+            window.location.href = url;
+        }
+        function printFoodReport() {
+            // Get current filter values from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const month = urlParams.get('month') || '';
+            const office = urlParams.get('office') || '';
+            const year = urlParams.get('year') || '';
+
+            // Use the correct endpoint URL
+            fetch(`/food_consumption_report/all?month=${month}&office=${office}&year=${year}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Generate the table header
+                    const tableHeader = `
+                    <thead>
+                        <tr>
+                            <th>Campus</th>
+                            <th>Year</th>
+                            <th>Month</th>
+                            <th>Office</th>
+                            <th>Food Type</th>
+                            <th>Servings</th>
+                            <th>GHG Emission (KG CO₂e)</th>
+                            <th>GHG Emission (T CO₂e)</th>
+                        </tr>
+                    </thead>`;
+
+                    // Generate table rows with the fetched data
+                    const tableBody = data.map(report => `
+                    <tr>
+                        <td>${report.Campus || ''}</td>
+                        <td>${report.YearTransaction || ''}</td>
+                        <td>${report.Month || ''}</td>
+                        <td>${report.Office || ''}</td>
+                        <td>${report.TypeOfFoodServed || ''}</td>
+                        <td>${report.QuantityOfServing || ''}</td>
+                        <td>${report.GHGEmissionKGCO2e || ''}</td>
+                        <td>${report.GHGEmissionTCO2e || ''}</td>
+                    </tr>
+                `).join('');
+
+                    // Create the print layout with styling
+                    const printContents = `
+                    <html>
+                    <head>
+                        <style>
+                            .header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 20px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 20px;
+                            }
+                            th, td {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            th {
+                                background-color: #f2f2f2;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <img src="${window.location.origin}/static/images/bsu.png" alt="BSU Logo" style="width: 50px; height: auto;">
+                            <h2>Food Consumption Report</h2>
+                            <img src="${window.location.origin}/static/images/csd.png" alt="CSD Logo" style="width: 50px; height: auto;">
+                        </div>
+                        <table>
+                            ${tableHeader}
+                            <tbody>
+                                ${tableBody}
+                            </tbody>
+                        </table>
+                    </body>
+                    </html>
+                `;
+
+                    // Create a new window for printing
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(printContents);
+                    printWindow.document.close();
+
+                    // Wait for images to load before printing
+                    printWindow.onload = function () {
+                        printWindow.print();
+                        printWindow.onafterprint = function () {
+                            printWindow.close();
+                        };
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    alert('Error generating print view. Please try again.');
+                });
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+
+                        // Auto-scroll to the active report link
+                        link.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

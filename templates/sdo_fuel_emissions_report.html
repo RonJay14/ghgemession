@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDO Report</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sdo.jpg') }}" type="image/x-icon">
+    <!-- ✅ Bootstrap 4 CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ✅ Font Awesome (For Icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/reports.css') }}" rel="stylesheet">
+    <!-- ✅ Custom CSS -->
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <!-- ✅ jQuery (MUST be first, before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- ✅ Popper.js (Required for Bootstrap dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- ✅ Bootstrap 4 JS (Only one version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ✅ PDF & HTML to PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    {% include 'sdotopnav.html' %}
+    <a class="navbar-brand ps-3" href="#">SDO <span style="text-transform: uppercase; font-style: italic;">{{
+            session['campus'] }} REPORT</span></a>
+    <div class="ms-auto"></div>
+    <!--<ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+    <!-- Sidebar and Main Content Layout -->
+    <div id="layoutSidenav">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+
+        <!--body content-->
+        <div id="layoutSidenav_content" style="margin: 0 auto;">
+            <!--tabe content-->
+            <div class="container-fluid px-4">
+                <h3 class="fw-bold text-uppercase border-bottom border-3 pb-2 text-center fs-1 pt-5"
+                    style="border-color: #2b3e53;">
+                    Fuel Consumption
+                </h3>
+                <div class="table-wrapper">
+
+                    <div class="topnav-table d-flex align-items-center justify-content-between px-3 py-2">
+                        <!-- Dropdown category -->
+                        <div class="dropdown" style="margin-top: 20px;">
+                            <button class="btn dropdown-toggle px-4 py-2 m-3" type="button" id="filterDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2b3e53;">
+                                <i class="fas fa-filter"></i> Filter Options
+                            </button>
+                            <ul class="dropdown-menu p-2 shadow-lg rounded-3" aria-labelledby="filterDropdown">
+
+                                <!-- Year -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#">Year</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item {% if request.args.get('year') == '' %}active{% endif %}"
+                                                href="?year=">All Years</a></li>
+                                        {% for y in range(2025, 2013, -1) %}
+                                        <li><a class="dropdown-item {% if request.args.get('year') == y|string %}active{% endif %}"
+                                                href="?year={{ y }}">{{ y }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+
+                        <!-- Download Report Button -->
+                        <div class="download-category">
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle px-4 py-2" type="button" id="downloadDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2b3e53">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                    <li><a class="dropdown-item"
+                                            href="{{ url_for('export_fuel_report_pdf', campus=request.args.get('campus'), category=request.args.get('category'), month=request.args.get('month'), quarter=request.args.get('quarter'), year=request.args.get('year')) }}">
+                                            Download Fuel Report (PDF)</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('export_fuel_report_excel') }}">
+                                            Download Fuel Report (Excel)</a></li>
+                                    <li><a class="dropdown-item"
+                                            href="{{ url_for('export_fuel_report_csv', campus=request.args.get('campus'), category=request.args.get('category'), month=request.args.get('month'), quarter=request.args.get('quarter'), year=request.args.get('year')) }}">
+                                            Download Fuel Report (CSV)</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-container">
+                        <div class="fade-overlay fade-left" id="fadeLeft"></div>
+                        <div class="fade-overlay fade-right" id="fadeRight"></div>
+                        <!-- 🚀 Left Arrow -->
+                        <div class="scroll-arrow scroll-arrow-left" id="arrowLeft">
+                            &#9664; <!-- Unicode left arrow -->
+                        </div>
+
+                        <!-- 🚀 Right Arrow -->
+                        <div class="scroll-arrow scroll-arrow-right" id="arrowRight">
+                            &#9654; <!-- Unicode right arrow -->
+                        </div>
+
+                        <div class="scrollable-content" id="scrollableContent">
+
+                            <table class="table" id="fuel_emissions">
+                                <thead>
+                                    <tr>
+                                        <th>Campus</th>
+                                        <th>Date</th>
+                                        <th>Driver</th>
+                                        <th>Type</th>
+                                        <th>Vehicle Type</th>
+                                        <th>Plate Number</th>
+                                        <th>Category</th>
+                                        <th>Fuel Type</th>
+                                        <th>Quantity (Liters)</th>
+                                        <th>Total Amount</th>
+                                        <th>CO₂ Emission (kg)</th>
+                                        <th>NH₄ Emission (kg CO₂-e)</th>
+                                        <th>N₂O Emission (kg CO₂-e)</th>
+                                        <th>Total Emission (kg CO₂-e)</th>
+                                        <th>Total Emission (t CO₂-e)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in data %}
+                                    <tr>
+                                        <td>{{ report['campus'] }}</td>
+                                        <td>{{ report['date'] }}</td>
+                                        <td>{{ report['driver'] }}</td>
+                                        <td>{{ report['type'] }}</td>
+                                        <td>{{ report['vehicle_equipment'] }}</td>
+                                        <td>{{ report['plate_no'] }}</td>
+                                        <td>{{ report['category'] }}</td>
+                                        <td>{{ report['fuel_type'] }}</td>
+                                        <td>{{ report['quantity_liters'] }}</td>
+                                        <td>{{ report['total_amount'] }}</td>
+                                        <td>{{ report['co2_emission'] }}</td>
+                                        <td>{{ report['nh4_emission'] }}</td>
+                                        <td>{{ report['n2o_emission'] }}</td>
+                                        <td>{{ report['total_emission'] }}</td>
+                                        <td>{{ report['total_emission_t'] }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#editModal{{ report['id'] }}">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            <form onsubmit="return false;" class="delete-form d-inline"
+                                                data-id="{{ report['id'] }}">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <!-- Edit Modal for each record -->
+                                    <div class="modal fade" id="editModal{{ report['id'] }}" tabindex="-1"
+                                        aria-labelledby="editModalLabel{{ report['id'] }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="POST"
+                                                    action="{{ url_for('edit_fuel_record', id=report['id']) }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalLabel{{ report['id'] }}">
+                                                            Edit Fuel Record</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <!-- Add form fields for editable columns -->
+                                                        <div class="form-group mb-3">
+                                                            <label for="date{{ report['id'] }}">Date</label>
+                                                            <input type="date" class="form-control"
+                                                                id="date{{ report['id'] }}" name="date"
+                                                                value="{{ report['date'].strftime('%Y-%m-%d') }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="driver{{ report['id'] }}">Driver</label>
+                                                            <input type="text" class="form-control"
+                                                                id="driver{{ report['id'] }}" name="driver"
+                                                                value="{{ report['driver'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="type{{ report['id'] }}">Type</label>
+                                                            <input type="text" class="form-control"
+                                                                id="type{{ report['id'] }}" name="type"
+                                                                value="{{ report['type'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="vehicle{{ report['id'] }}">Vehicle Type</label>
+                                                            <input type="text" class="form-control"
+                                                                id="vehicle{{ report['id'] }}" name="vehicle_equipment"
+                                                                value="{{ report['vehicle_equipment'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="plate{{ report['id'] }}">Plate Number</label>
+                                                            <input type="text" class="form-control"
+                                                                id="plate{{ report['id'] }}" name="plate_no"
+                                                                value="{{ report['plate_no'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="category{{ report['id'] }}">Category</label>
+                                                            <input type="text" class="form-control"
+                                                                id="category{{ report['id'] }}" name="category"
+                                                                value="{{ report['category'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="fuelType{{ report['id'] }}">Fuel Type</label>
+                                                            <input type="text" class="form-control"
+                                                                id="fuelType{{ report['id'] }}" name="fuel_type"
+                                                                value="{{ report['fuel_type'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="quantity{{ report['id'] }}">Quantity
+                                                                (Liters)</label>
+                                                            <input type="number" step="0.01" class="form-control"
+                                                                id="quantity{{ report['id'] }}" name="quantity_liters"
+                                                                value="{{ report['quantity_liters'] }}" required>
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="amount{{ report['id'] }}">Total Amount</label>
+                                                            <input type="number" step="0.01" class="form-control"
+                                                                id="amount{{ report['id'] }}" name="total_amount"
+                                                                value="{{ report['total_amount'] }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Save
+                                                            changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!-- Pagination -->
+                        <div style="z-index: 4; position: relative; padding: 5px 10px; padding-top: 20px;"
+                            class="pagination-container d-flex justify-content-between align-items-center mt-3">
+                            <!-- Previous Button -->
+                            <a class="btn btn-link text-dark {% if current_page == 1 %}disabled{% endif %}"
+                                href="{{ url_for('sdo_fuel_emissions_report', page=current_page - 1, category=category, month=month, quarter=quarter, year=year) }}">
+                                &lsaquo; Previous
+                            </a>
+
+                            <!-- Page Indicator -->
+                            <span class="page-indicator text-dark">
+                                Page {{ current_page }} of {{ total_pages }}
+                            </span>
+
+                            <!-- Next Button -->
+                            <a class="btn btn-dark {% if current_page == total_pages %}disabled{% endif %}"
+                                href="{{ url_for('sdo_fuel_emissions_report', page=current_page + 1, category=category, month=month, quarter=quarter, year=year) }}">
+                                Next &rsaquo;
+                            </a>
+                        </div>
+                    </div>
+
+
+
+                    <script>
+                        const arrowLeft = document.getElementById("arrowLeft");
+                        const arrowRight = document.getElementById("arrowRight");
+
+                        function updateFadeVisibility() {
+                            const { scrollLeft, scrollWidth, clientWidth } = scrollableContent;
+
+                            const showLeft = scrollLeft > 0;
+                            const showRight = scrollLeft < scrollWidth - clientWidth - 1;
+
+                            // 🌟 Fade visibility
+                            fadeLeft.classList.toggle("visible", showLeft);
+                            fadeLeft.classList.toggle("hidden", !showLeft);
+                            fadeRight.classList.toggle("visible", showRight);
+                            fadeRight.classList.toggle("hidden", !showRight);
+
+                            // 🡄🡆 Arrow visibility (same condition as fades)
+                            arrowLeft.classList.toggle("visible", showLeft);
+                            arrowRight.classList.toggle("visible", showRight);
+                        }
+
+                        scrollableContent.addEventListener("scroll", updateFadeVisibility);
+                        window.addEventListener("resize", updateFadeVisibility);
+                        document.addEventListener("DOMContentLoaded", updateFadeVisibility);
+                        document.addEventListener('DOMContentLoaded', function () {
+                        const thElements = document.querySelectorAll('.table thead th');
+    
+                        thElements.forEach(th => {
+                            th.addEventListener('mouseenter', function () {
+                                const text = this.textContent.trim();
+                                if (this.offsetWidth < this.scrollWidth) { // Check if text is truncated
+                                    const tooltip = document.createElement('div');
+                                    tooltip.textContent = text;
+                                    tooltip.classList.add('custom-tooltip');
+                                    document.body.appendChild(tooltip);
+    
+                                    const rect = this.getBoundingClientRect();
+                                    tooltip.style.left = rect.left + 'px';
+                                    tooltip.style.top = rect.bottom + 5 + 'px'; // Position below the th
+                                }
+                            });
+    
+                            th.addEventListener('mouseleave', function () {
+                                const tooltip = document.querySelector('.custom-tooltip');
+                                if (tooltip) {
+                                    tooltip.remove();
+                                }
+                            });
+                        });
+                    });
+                    </script>
+
+                </div>
+
+
+            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    let currentPath = window.location.pathname;
+                    let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                    sidebarLinks.forEach(link => {
+                        if (link.getAttribute("href") === currentPath) {
+                            link.classList.add("active");
+                        }
+                    });
+                });
+            </script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    let currentPath = window.location.pathname;
+                    let sidebarLinks = document.querySelectorAll(".nav-link");
+
+                    sidebarLinks.forEach(link => {
+                        if (link.getAttribute("href") === currentPath) {
+                            link.classList.add("active");
+
+                            // If the link is inside a dropdown, open the dropdown
+                            let parentCollapse = link.closest(".collapse");
+                            if (parentCollapse) {
+                                parentCollapse.classList.add("show");
+                                let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                                if (dropdownToggle) {
+                                    dropdownToggle.classList.add("active");
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+            <!-- Add these scripts before closing body tag -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Handle delete button clicks
+                    document.querySelectorAll('.delete-form').forEach(form => {
+                        form.addEventListener('submit', function (e) {
+                            const id = this.getAttribute('data-id');
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "This action cannot be undone.",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: 'Yes, delete it!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const tempForm = document.createElement('form');
+                                    tempForm.method = 'POST';
+                                    tempForm.action = `/delete_fuel_record/${id}`;
+                                    document.body.appendChild(tempForm);
+                                    tempForm.submit();
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+
+            <!-- Flash messages handler -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            {% if category == 'edit_success' %}
+            <script>
+                Swal.fire({
+                    title: 'Updated!',
+                    text: 'The fuel record has been updated successfully.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            </script>
+            {% elif category == 'delete_success' %}
+            <script>
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'The fuel record was successfully deleted.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            </script>
+            {% elif category == 'danger' %}
+            <script>
+                Swal.fire({
+                    title: 'Error!',
+                    text: '{{ message }}',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+    </div>
+
+</body>
+
+</html>

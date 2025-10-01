@@ -1,0 +1,57 @@
+
+@app.route('/update_record', methods=['POST'])
+def update_record():
+    try:
+        data = request.json
+        table_name = data.get('tableName')
+        record_id = data.get('id')
+        updated_values = data.get('updatedValues')
+
+        # Validate input data
+        if not table_name or not record_id or not updated_values:
+            return jsonify({"error": "Invalid data"}), 400
+
+        # Establish database connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Dynamically generate the SQL query
+        set_clause = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        query = f"UPDATE {table_name} SET {set_clause} WHERE id = %s"
+        params = list(updated_values.values()) + [record_id]
+
+        # Execute the query
+        cursor.execute(query, params)
+        conn.commit()
+
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in /update_record: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+
+@app.route('/delete_record', methods=['DELETE'])
+def delete_record():
+    data = request.json
+    table_name = data.get('tableName')
+    record_id = data.get('id')
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        query = f"DELETE FROM {table_name} WHERE id = %s"
+        cursor.execute(query, (record_id,))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()

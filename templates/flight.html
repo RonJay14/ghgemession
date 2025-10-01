@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Food Consumption" />
+    <meta name="author" content="Your Name" />
+    <title>Flight Data</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/bsu.png') }}" type="image/x-icon">
+    <!-- ✅ Bootstrap 4 CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ✅ Custom CSS -->
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/reports.css') }}" rel="stylesheet">
+
+    <!-- ✅ jQuery (MUST be first, before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- ✅ Popper.js (Required for Bootstrap dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- ✅ Bootstrap 4 JS (Only one version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ✅ PDF & HTML to PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Add these script tags in the <head> section -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark"
+        style="padding-left: 45px; height: 80px; padding-bottom: 15px; padding-top: 10px; font-weight: bold;">
+        <!-- Campus Logo -->
+        <img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}"
+            alt="Campus Logo" height="75" class="me-2">
+        <a class="navbar-brand ps-3" href="{{ url_for('external_dashboard') }}">EXTERNAL AFFAIRS <span
+                style="text-transform: uppercase; font-style: italic;">{{ session['campus'] }} CAMPUS</span></a>
+        <!-- Spacer to push "Sign-out" to the right -->
+        <div class="ms-auto"></div>
+
+        <!-- Sign-out Icon and Link 
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+    <!-- Sidebar and Main Content Layout -->
+    <div id="layoutSidenav">
+        <!-- Sidebar -->
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu" style="margin-top: 60px;">
+                    <div class="nav">
+                        <a class="nav-link" href="{{ url_for('external_dashboard') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                            Analytics
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+
+                                <a class="nav-link" href="{{ url_for('ea_analytics') }}">Emission Trends</a>
+
+
+                            </nav>
+                        </div>
+
+
+                        <!-- External Affairs Links -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseExternal" aria-expanded="false" aria-controls="collapseExternal">
+                            <div class="sb-nav-link-icon"><i class="fas fa-plane"></i></div>
+                            Consumption Report
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseExternal" aria-labelledby="headingExternal"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('flight') }}">Flight</a>
+                                <a class="nav-link" href="{{ url_for('accommodation') }}">Accommodation</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="{{ url_for('ea') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                            User's Guide
+                        </a>
+                        <div class="logout-container">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-power-off fa-fw"></i>&nbsp; Sign-out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4" style="background-color: rgb(235, 235, 237);">
+                    <h2 class="fw-bold text-uppercase border-bottom border-3 pb-2 text-center fs-1 pt-5"
+                        style="border-color: #2c3f54;">Flight Data Report</h2>
+
+                    <div class="table-container" style="padding:auto">
+                        <div class="table-wrapper">
+                            
+
+                            <!-- Topnav Table (Filters & Download Button) -->
+                            <div class="topnav-table d-flex align-items-center justify-content-between px-3 py-2"
+                                style="padding-top: 20px !important;">
+                            <!-- Filter Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle px-4 py-2" type="button" id="filterDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2c3f54;">
+                                    <i class="fas fa-filter"></i> Filter Options
+                                </button>
+                                <ul class="dropdown-menu p-2 shadow-lg rounded-3" aria-labelledby="filterDropdown">
+
+
+                                    <!-- Year Filter -->
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">Year</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item {% if selected_year == '' %}active{% endif %}"
+                                                    href="?year=">All Years</a></li>
+                                            {% for y in range(2025, 2013, -1) %}
+                                            <li><a class="dropdown-item {% if selected_year == y|string %}active{% endif %}"
+                                                    href="?year={{ y }}">{{ y }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+
+                                <!-- Download Report Button -->
+                                <div class="download-category row">
+                                    <div class="dropdown  col-sm">
+                                        <button class="btn dropdown-toggle px-4 py-2" type="button"
+                                            id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="border-color: #2c3f54;">
+                                            <i class="fas fa-ellipsis-h"></i> Actions
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="openCalculatorModal(); return false;">
+                                                    Calculate</a></li>
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="printFlightReport(); return false;">
+                                                    Print Report</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="dropdown col-sm">
+                                        <button class="btn dropdown-toggle px-4 py-2" type="button"
+                                            id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="border-color: #2c3f54;">
+                                            <i class="fas fa-download"></i> Downloads
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="downloadFlightExcel(); return false;">
+                                                     Excel</a></li>
+                                            <li><a class="dropdown-item" href="#"
+                                                    onclick="downloadFlightCSV(); return false;">
+                                                     CSV</a></li>
+                                        </ul>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <!-- ------------------------------------------------------------------------------------------------------ -->
+                            <div class="table-container">
+                                <div class="fade-overlay fade-left" id="fadeLeft"></div>
+                                <div class="fade-overlay fade-right" id="fadeRight"></div>
+                                <!-- 🚀 Left Arrow -->
+                                <div class="scroll-arrow scroll-arrow-left" id="arrowLeft">
+                                    &#9664; <!-- Unicode left arrow -->
+                                </div>
+                                <!-- 🚀 Right Arrow -->
+                                <div class="scroll-arrow scroll-arrow-right" id="arrowRight">
+                                    &#9654; <!-- Unicode right arrow -->
+                                </div>
+                                <div class="scrollable-content" id="scrollableContent">
+                                    <div class="table-wrapper">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Year</th>
+                                                    <th>Office</th>
+                                                    <th>Traveller</th>
+                                                    <th>Purpose</th>
+                                                    <th>Travel Date</th>
+                                                    <th>Flight Type</th>
+                                                    <th>Origin</th>
+                                                    <th>Destination</th>
+                                                    <th>Class</th>
+                                                    <th>One Way/Round Trip</th>
+                                                    <th>kg CO₂e</th>
+                                                    <th>t CO₂e</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for flight in flight_data %}
+                                                <tr data-id="{{ flight.ID }}"> <!-- Use `ID` here -->
+                                                    <td>{{ flight.Year }}</td>
+                                                    <td>{{ flight.Office }}</td>
+                                                    <td>{{ flight.TravellerName }}</td>
+                                                    <td>{{ flight.TravelPurpose }}</td>
+                                                    <td>{{ flight.TravelDate }}</td>
+                                                    <td>{{ flight.DomesticInternational }}</td>
+                                                    <td>{{ flight.Origin }}</td>
+                                                    <td>{{ flight.Destination }}</td>
+                                                    <td>{{ flight.Class }}</td>
+                                                    <td>{{ flight.OnewayRoundTrip }}</td>
+                                                    <td>{{ flight.GHGEmissionKGC02e }}</td>
+                                                    <td>{{ flight.GHGEmissionTC02e }}</td>
+                                                    <td>
+                                                        <button class="delete-btn"
+                                                            onclick="deleteFlight('{{ flight.ID }}')"><i
+                                                                class="fa-solid fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                const arrowLeft = document.getElementById("arrowLeft");
+                                const arrowRight = document.getElementById("arrowRight");
+
+                                function updateFadeVisibility() {
+                                    const { scrollLeft, scrollWidth, clientWidth } = scrollableContent;
+
+                                    const showLeft = scrollLeft > 0;
+                                    const showRight = scrollLeft < scrollWidth - clientWidth - 1;
+
+                                    // 🌟 Fade visibility
+                                    fadeLeft.classList.toggle("visible", showLeft);
+                                    fadeLeft.classList.toggle("hidden", !showLeft);
+                                    fadeRight.classList.toggle("visible", showRight);
+                                    fadeRight.classList.toggle("hidden", !showRight);
+
+                                    // 🡄🡆 Arrow visibility (same condition as fades)
+                                    arrowLeft.classList.toggle("visible", showLeft);
+                                    arrowRight.classList.toggle("visible", showRight);
+                                }
+
+                                scrollableContent.addEventListener("scroll", updateFadeVisibility);
+                                window.addEventListener("resize", updateFadeVisibility);
+                                document.addEventListener("DOMContentLoaded", updateFadeVisibility);
+
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const thElements = document.querySelectorAll('.table thead th');
+
+                                    thElements.forEach(th => {
+                                        th.addEventListener('mouseenter', function () {
+                                            const text = this.textContent.trim();
+                                            if (this.offsetWidth < this.scrollWidth) { // Check if text is truncated
+                                                const tooltip = document.createElement('div');
+                                                tooltip.textContent = text;
+                                                tooltip.classList.add('custom-tooltip');
+                                                document.body.appendChild(tooltip);
+
+                                                const rect = this.getBoundingClientRect();
+                                                tooltip.style.left = rect.left + 'px';
+                                                tooltip.style.top = rect.bottom + 5 + 'px'; // Position below the th
+                                            }
+                                        });
+
+                                        th.addEventListener('mouseleave', function () {
+                                            const tooltip = document.querySelector('.custom-tooltip');
+                                            if (tooltip) {
+                                                tooltip.remove();
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+                            <!-- ------------------------------------------------------------------------------------------------------ -->
+                        </div>
+                        <!-- Pagination -->
+                        <div style="z-index: 1; position: relative;"
+                        class="pagination-container d-flex justify-content-between align-items-center mt-3">
+                        <!-- Previous Button -->
+                        <a style="text-decoration: none;"
+                            class="btn btn-link text-dark {% if current_page == 1 %}disabled{% endif %}"
+                            href="{{ url_for('flight', year=request.args.get('year'), category=request.args.get('category'), page=current_page - 1) }}">
+                            &lsaquo; Previous
+                        </a>
+
+                        <!-- Page Indicator -->
+                        <span class="page-indicator text-dark">
+                            Page {{ current_page }} of {{ total_pages }}
+                        </span>
+
+                        <!-- Next Button -->
+                        <a class="btn btn-dark {% if current_page == total_pages %}disabled{% endif %}"
+                            href="{{ url_for('flight', year=request.args.get('year'), category=request.args.get('category'), page=current_page + 1) }}">
+                            Next &rsaquo;
+                        </a>
+                        </div>
+                    </div>
+
+                    <BR>
+
+                    <script>
+                        const campusElement = document.getElementById("campus");
+                        if (campusElement) {
+                            campusElement.addEventListener("mousedown", function (event) {
+                                event.preventDefault();
+                            });
+                        }
+                    </script>
+                    
+                    <style>
+                        /* Modal backdrop with a blur effect */
+                        .modal {
+                            display: none;
+                            position: fixed;
+                            z-index: 5;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            height: 100%;
+                            overflow: auto;
+                            background-color: rgba(0, 0, 0, 0.7);
+                            backdrop-filter: blur(10px); /* Adds a blur effect to the background */
+                        }
+                    
+                        /* Modal content with glass morphism effect */
+                        .modal-content {
+                            background-color: rgb(222, 229, 239); /* Semi-transparent white */
+                            margin: 5% auto;
+                            padding: 30px;
+                            border-radius: 15px;
+                            width: 50%;
+                            max-width: 600px;
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                            border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle border for glass effect */
+                            backdrop-filter: blur(10px); /* Enhances the glass morphism effect */
+                            animation: slideIn 0.5s ease-out; /* Smooth slide-in animation */
+                        }
+                    
+                        /* Keyframes for slide-in animation */
+                        @keyframes slideIn {
+                            from {
+                                transform: translateY(-50px);
+                                opacity: 0;
+                            }
+                            to {
+                                transform: translateY(0);
+                                opacity: 1;
+                            }
+                        }
+                    
+                        /* Close button with a modern look */
+                        .close {
+                            color: #aaa;
+                            float: right;
+                            font-size: 28px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .close:hover {
+                            color: #ff4757; /* Vibrant red for hover */
+                        }
+                    
+                        /* Form container styling */
+                        .form-container {
+                            max-width: 100%;
+                            margin: 0 auto;
+                        }
+                    
+                        /* Form group styling */
+                        .form-group {
+                            margin-bottom: 20px;
+                        }
+                    
+                        /* Input and select fields with a modern look */
+                        .form-control {
+                            height: max-content;
+                            width: 100%;
+                            padding: 12px;
+                            border: 1px solid rgba(0, 0, 0, 0.1);
+                            border-radius: 8px;
+                            font-size: 16px;
+                            background-color: rgba(255, 255, 255, 0.9);
+                            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                        }
+                    
+                        .form-control:focus {
+                            border-color: #007bff;
+                            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+                            outline: none;
+                        }
+                    
+                        /* Buttons with gradient and hover effects */
+                        .btn-calculate, .btn-generate {
+                            width: 100%;
+                            padding: 12px;
+                            background: linear-gradient(135deg, #007bff, #00bfff); /* Gradient background */
+                            color: #fff;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            cursor: pointer;
+                            transition: background 0.3s ease, transform 0.2s ease;
+                        }
+                    
+                        .btn-calculate:hover, .btn-generate:hover {
+                            background: linear-gradient(135deg, #0056b3, #0099cc); /* Darker gradient on hover */
+                            transform: translateY(-2px); /* Slight lift effect */
+                        }
+                    
+                        /* GHG emission container with a futuristic card look */
+                        .ghg-emission-container {
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin: 20px 0;
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                        }
+                    
+                        .ghg-emission-container h4 {
+                            color: #2c3f54;
+                            font-weight: 600;
+                            margin-bottom: 15px;
+                        }
+                    
+                        /* Style specifically for emission input fields */
+                        .ghg-emission-container .form-group {
+                            margin-bottom: 15px;
+                        }
+                    
+                        .ghg-emission-container label {
+                            display: block;
+                            margin-bottom: 8px;
+                            color: #2c3f54;
+                            font-weight: 500;
+                        }
+                    
+                        .ghg-emission-container .form-control {
+                            background-color: rgba(255, 255, 255, 0.9);
+                            border: 1px solid rgba(44, 63, 84, 0.2);
+                            transition: all 0.3s ease;
+                        }
+                    
+                        .ghg-emission-container .form-control:focus {
+                            border-color: #2c3f54;
+                            box-shadow: 0 0 8px rgba(44, 63, 84, 0.2);
+                            background-color: #ffffff;
+                        }
+                    
+                        /* Add a subtle hover effect */
+                        .ghg-emission-container .form-control:hover {
+                            background-color: #ffffff;
+                        }
+                    
+                        /* Responsive adjustments */
+                        @media (max-width: 768px) {
+                            .modal-content {
+                                width: 90%;
+                                padding: 20px;
+                            }
+                        }
+                    </style>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Calculator Modal -->
+    <div id="myModal" class="modal" style="display: none; z-index: 5;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="container">
+                <div class="form-container">
+                    <h2 class="text-center mb-4">Flight CO₂ Emission Calculator</h2>
+                    <form method="POST" action="{{ url_for('flight') }}" id="flightForm">
+                        <div class="form-group">
+                            <label for="campus">Campus:</label>
+                            <select id="campus" name="campus" class="form-control">
+                                <option value="" {% if not session.get('campus') %}selected{% endif %}></option>
+                                <option value="Alangilan" {% if session.get('campus')=='Alangilan' %}selected{% endif %}>Alangilan</option>
+                                <option value="ARASOF-Nasugbu" {% if session.get('campus')=='ARASOF-Nasugbu' %}selected{% endif %}>ARASOF-Nasugbu</option>
+                                <option value="Balayan" {% if session.get('campus')=='Balayan' %}selected{% endif %}>Balayan</option>
+                                <option value="Central" {% if session.get('campus')=='Central' %}selected{% endif %}>Central</option>
+                                <option value="JPLPC-Malvar" {% if session.get('campus')=='JPLPC-Malvar' %}selected{% endif %}>JPLPC-Malvar</option>
+                                <option value="Lemery" {% if session.get('campus')=='Lemery' %}selected{% endif %}>Lemery</option>
+                                <option value="Lipa" {% if session.get('campus')=='Lipa' %}selected{% endif %}>Lipa</option>
+                                <option value="Lobo" {% if session.get('campus')=='Lobo' %}selected{% endif %}>Lobo</option>
+                                <option value="Mabini" {% if session.get('campus')=='Mabini' %}selected{% endif %}>Mabini</option>
+                                <option value="Pablo Borbon" {% if session.get('campus')=='Pablo Borbon' %}selected{% endif %}>Pablo Borbon</option>
+                                <option value="Rosario" {% if session.get('campus')=='Rosario' %}selected{% endif %}>Rosario</option>
+                                <option value="San Juan" {% if session.get('campus')=='San Juan' %}selected{% endif %}>San Juan</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="office">Office/Department:</label>
+                            <select id="office" name="office" required class="form-control">
+                                <option value=""></option>
+                                <option value="IAU">IAU</option>
+                                <option value="QAM">QAM</option>
+                                <option value="SDO">SDO</option>
+                                <option value="PDO">PDO</option>
+                                <option value="EA">EA</option>
+                                <option value="RGO">RGO</option>
+                                <option value="ICT">ICT</option>
+                                <option value="CAS">CAS</option>
+                                <option value="CABE">CABE</option>
+                                <option value="CICS">CICS</option>
+                                <option value="CET">CET</option>
+                                <option value="CTE">CTE</option>
+                                <option value="CE">CE</option>
+                                <option value="CA">CA</option>
+                                <option value="TAO">TAO</option>
+                                <option value="ORS">ORS</option>
+                                <option value="SFAO">SFAO</option>
+                                <option value="GC">GC</option>
+                                <option value="OLS">OLS</option>
+                                <option value="SOO">SOO</option>
+                                <option value="SD">SD</option>
+                                <option value="OJT">OJT</option>
+                                <option value="NSTP">NSTP</option>
+                                <option value="HRMO">HRMO</option>
+                                <option value="RMO">RMO</option>
+                                <option value="PO">PO</option>
+                                <option value="BO">BO</option>
+                                <option value="CD">CD</option>
+                                <option value="AO">AO</option>
+                                <option value="PFMO">PFMO</option>
+                                <option value="EMU">EMU</option>
+                                <option value="PSO">PSO</option>
+                                <option value="GSO">GSO</option>
+                                <option value="ESO">ESO</option>
+                                <option value="RO">RO</option>
+                                <option value="OVCRDES">OVCRDES</option>
+                                <option value="OVCDEA">OVCDEA</option>
+                                <option value="OVCAA">OVCAA</option>
+                                <option value="OVCAF">OVCAF</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="year">Year:</label>
+                            <select id="year" name="year" required class="form-control">
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="travellerName">Name of Traveller:</label>
+                            <input type="text" id="travellerName" name="travellerName" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="travelPurpose">Purpose of Travel:</label>
+                            <input type="text" id="travelPurpose" name="travelPurpose" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="travelDate">Travel Date:</label>
+                            <input type="date" id="travelDate" name="travelDate" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="domesticInternational">Domestic/International:</label>
+                            <select id="domesticInternational" name="domesticInternational" required class="form-control">
+                                <option value=""></option>
+                                <option value="Domestic">Domestic</option>
+                                <option value="International">International</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="origin">Origin (City or IATA Code):</label>
+                            <input type="text" id="origin" name="origin" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destination">Destination (City or IATA Code):</label>
+                            <input type="text" id="destination" name="destination" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="class">Class:</label>
+                            <select id="class" name="class" required class="form-control">
+                                <option value=""></option>
+                                <option value="Economy">Economy</option>
+                                <option value="Business Class">Business Class</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="onewayRoundTrip">One Way/Round Trip:</label>
+                            <select id="onewayRoundTrip" name="onewayRoundTrip" required class="form-control">
+                                <option value=""></option>
+                                <option value="One Way">One Way</option>
+                                <option value="Round Trip">Round Trip</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ghgEmissionKGC02e">kg CO₂e:</label>
+                            <input type="text" id="ghgEmissionKGC02e" name="ghgEmissionKGC02e" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="ghgEmissionTC02e">t CO₂e:</label>
+                            <input type="text" id="ghgEmissionTC02e" name="ghgEmissionTC02e" required class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn-calculate">Add Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // Function to filter flights by year and redirect with the selected year in the URL
+        function filterByYear() {
+            const selectedYear = document.getElementById('yearFilter').value;
+            const url = selectedYear ? `/flight?year=${selectedYear}` : '/flight';
+            window.location.href = url; // Redirect with the year filter
+        }
+
+        function deleteFlight(flightId) {
+            // Check if the flightId is valid
+            if (!flightId || flightId === 'undefined') {
+                console.error("Invalid flight ID:", flightId);
+                alert("Invalid flight ID. Please check the data.");
+                return; // Stop if the ID is invalid
+            }
+
+            if (confirm("Are you sure you want to delete this record?")) {
+                fetch(`/delete_flight/${flightId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Flight record deleted successfully.");
+                            location.reload(); // Reload the page to update the table
+                        } else {
+                            console.error("Server error:", data.error);
+                            alert("An error occurred while trying to delete the flight record.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                        alert("An error occurred while trying to delete the flight record.");
+                    });
+            }
+        }
+
+        // Auto-calculate GHG emissions when form fields change
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('flightForm');
+            const fields = ['domesticInternational', 'class', 'onewayRoundTrip'];
+            
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    element.addEventListener('change', calculateEmissions);
+                }
+            });
+        });
+        
+        function calculateEmissions() {
+            const domesticInternational = document.getElementById('domesticInternational').value;
+            const travelClass = document.getElementById('class').value;
+            const tripType = document.getElementById('onewayRoundTrip').value;
+            
+            let factor = 0;
+            
+            // Set emission factors based on flight type and class
+            if (domesticInternational === 'Domestic') {
+                factor = travelClass === 'Economy' ? 0.1597 : 0.2395;
+            } else if (domesticInternational === 'International') {
+                factor = travelClass === 'Economy' ? 0.139 : 0.4026;
+            }
+            
+            // Double the factor for round trips
+            if (tripType === 'Round Trip') {
+                factor *= 2;
+            }
+            
+            // Calculate emissions
+            const kgCO2e = factor * 1000; // Convert to kg
+            const tCO2e = factor;
+            
+            // Update form fields
+            document.getElementById('ghgEmissionKGC02e').value = kgCO2e.toFixed(4);
+            document.getElementById('ghgEmissionTC02e').value = tCO2e.toFixed(4);
+        }
+
+        function printFlightReport() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+
+            fetch(`/flight/all?${queryString}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableHeader = `
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Office</th>
+                                <th>Traveller</th>
+                                <th>Purpose</th>
+                                <th>Travel Date</th>
+                                <th>Flight Type</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Class</th>
+                                <th>One Way/Round Trip</th>
+                                <th>kg CO₂e</th>
+                                <th>t CO₂e</th>
+                            </tr>
+                        </thead>`;
+
+                    const tableBody = data.map(record => `
+                        <tr>
+                            <td>${record.Year}</td>
+                            <td>${record.Office}</td>
+                            <td>${record.TravellerName}</td>
+                            <td>${record.TravelPurpose}</td>
+                            <td>${record.TravelDate}</td>
+                            <td>${record.DomesticInternational}</td>
+                            <td>${record.Origin}</td>
+                            <td>${record.Destination}</td>
+                            <td>${record.Class}</td>
+                            <td>${record.OnewayRoundTrip}</td>
+                            <td>${record.GHGEmissionKGC02e}</td>
+                            <td>${record.GHGEmissionTC02e}</td>
+                        </tr>
+                    `).join('');
+
+                    const printContents = `
+                        <div class="header">
+                            <img src="{{ url_for('static', filename='images/bsu.png') }}" alt="Logo" style="width: 50px; height: auto;">
+                            <h2>Flight Data Report</h2>
+                            <img src="{{ url_for('static', filename='images/csd.png') }}" alt="Logo" style="width: 50px; height: auto;">
+                        </div>
+                        <table border="1" cellspacing="0" cellpadding="5">
+                            ${tableHeader}
+                            <tbody>
+                                ${tableBody}
+                            </tbody>
+                        </table>`;
+
+                    const originalContents = document.body.innerHTML;
+                    document.body.innerHTML = printContents;
+                    window.print();
+                    document.body.innerHTML = originalContents;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+
+        function downloadFlightExcel() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+
+            fetch(`/flight/all?${queryString}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('No data available for export.');
+                        return;
+                    }
+
+                    const formattedData = data.map(record => ({
+                        Year: record.Year,
+                        Office: record.Office,
+                        Traveller: record.TravellerName,
+                        Purpose: record.TravelPurpose,
+                        "Travel Date": record.TravelDate,
+                        "Flight Type": record.DomesticInternational,
+                        Origin: record.Origin,
+                        Destination: record.Destination,
+                        Class: record.Class,
+                        "One Way/Round Trip": record.OnewayRoundTrip,
+                        "kg CO₂e": record.GHGEmissionKGC02e,
+                        "t CO₂e": record.GHGEmissionTC02e
+                    }));
+
+                    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Flight Data");
+                    XLSX.writeFile(workbook, "FlightDataReport.xlsx");
+                })
+                .catch(error => {
+                    console.error('Error exporting data:', error);
+                    alert('An error occurred while exporting the data.');
+                });
+        }
+
+
+        // Function to open the calculator modal
+        function openCalculatorModal() {
+            document.getElementById('myModal').style.display = 'block';
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        // Pagination logic
+        let currentPage = 1;
+        const rowsPerPage = 15;
+
+        function renderTable() {
+            const rows = document.querySelectorAll('#reportData tr');
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Only update pagination info if the elements exist
+            const pageInfo = document.getElementById('page-info');
+            if (pageInfo) {
+                pageInfo.innerText = `Page ${currentPage} of ${totalPages}`;
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalRows = document.querySelectorAll('#reportData tr').length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // Call renderTable() on page load to display the first page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+        });
+
+        function downloadFlightCSV() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+
+            fetch(`/flight/all?${queryString}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('No data available for export.');
+                        return;
+                    }
+
+                    const headers = [
+                        "Year", "Office", "Traveller", "Purpose", "Travel Date",
+                        "Flight Type", "Origin", "Destination", "Class",
+                        "One Way/Round Trip", "kg CO₂e", "t CO₂e"
+                    ];
+                    const csvRows = [headers.join(",")];
+
+                    data.forEach(record => {
+                        const row = [
+                            record.Year,
+                            record.Office,
+                            record.TravellerName,
+                            record.TravelPurpose,
+                            record.TravelDate,
+                            record.DomesticInternational,
+                            record.Origin,
+                            record.Destination,
+                            record.Class,
+                            record.OnewayRoundTrip,
+                            record.GHGEmissionKGC02e,
+                            record.GHGEmissionTC02e
+                        ].map(value => `"${value}"`).join(",");
+                        csvRows.push(row);
+                    });
+
+                    const csvContent = csvRows.join("\n");
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+
+                    if (link.download !== undefined) {
+                        const url = URL.createObjectURL(blob);
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", "FlightDataReport.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while exporting the data.');
+                });
+        }
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

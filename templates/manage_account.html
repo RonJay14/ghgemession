@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Manage Account</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/CSD.png') }}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    
+
+    <style>
+                   /* Modern Color Scheme */
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #1abc9c;
+        --background-color: #f8f9fa;
+        --text-color: #2c3e50;
+        --white: #ffffff;
+    }
+
+    body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+        background-color: var(--primary-color) !important;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        color: var(--white) !important;
+    }
+
+    .navbar-nav .nav-link {
+        color: var(--white) !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: var(--accent-color) !important;
+    }
+        .sb-sidenav {
+                background-color: #343a40;
+                color: #fff;
+            }
+        
+            .sb-sidenav .sb-sidenav-menu {
+                padding: 20px;
+                overflow-y: scroll; /* Enable vertical scrolling */
+                max-height: 100vh; /* Ensure the sidebar does not exceed the viewport height */
+            }
+        
+            .sb-sidenav .sb-sidenav-menu .nav {
+                flex-direction: column;
+            }
+        
+            .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+                color: #adb5bd;
+                padding: 10px 15px;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+        
+            .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+                background-color: #495057;
+                color: #fff;
+            }
+        
+            .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+                background-color: #007bff;
+                color: #fff;
+            }
+        
+            .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+                font-size: 1.1em;
+                margin-top: 20px;
+                margin-bottom: 10px;
+                color: #ced4da;
+            }
+        
+            .sb-sidenav-menu .nav-link,
+            .sb-sidenav-menu .sb-sidenav-menu-heading {
+                text-transform: uppercase;
+            }
+        
+            /* Hide scrollbar but still allow scrolling */
+            .sb-sidenav .sb-sidenav-menu::-webkit-scrollbar {
+                display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+            }
+        
+            .sb-sidenav .sb-sidenav-menu {
+                -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+                scrollbar-width: none;  /* Hide scrollbar for Firefox */
+            }
+        
+            /* Layout Styling */
+            #layoutSidenav {
+                display: flex;
+                min-height: 100vh;
+                overflow: hidden;
+            }
+        
+            #layoutSidenav_nav {
+                width: 250px;
+                background-color: #495057;
+                flex-shrink: 0;
+            }
+        
+            .collapse {
+                max-height: 300px; /* Set a max height for the dropdown */
+                overflow-y: auto; /* Enable vertical scrolling for the dropdown */
+            }
+            ::-webkit-scrollbar {
+                    display: none;
+                    /* Hides the scrollbar */
+                }
+        
+                element-selector {
+                    overflow-x: scroll;
+                    /* Allows horizontal scrolling */
+                }
+        
+           /* body {
+                background-color: #f8f9fa;
+                color: #333;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+            }*/
+        
+            /* General Card Styling */
+            .card {
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
+                /* Layout Styling */
+                #layoutSidenav {
+                    display: flex;
+                    min-height: 100vh;
+                    overflow: hidden;
+                }
+            
+                #layoutSidenav_nav {
+                    width: 250px;
+                    background-color: #495057;
+                    flex-shrink: 0;
+                }
+            
+                .collapse {
+                    max-height: 300px; /* Set a max height for the dropdown */
+                    overflow-y: auto; /* Enable vertical scrolling for the dropdown */
+                }
+               /* body {
+                    background-color: #f8f9fa;
+                    color: #333;
+                    font-family: 'Arial', sans-serif;
+                    margin: 0;
+                    padding: 0;
+                }
+                */
+                /* General Card Styling */
+                .card {
+                    border: none;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 20px;
+                    background-color: #fff;
+                }
+        
+                .card-header {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 15px;
+                    text-transform: uppercase;
+                    color: #fff;
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                    text-align: center;
+                }
+        
+                .card-header.bg-primary {
+                    background-color: #ff4d4f;
+                    /* Red color for "Create New Account" */
+                }
+        
+                .card-header.bg-secondary {
+                    background-color: #6c757d;
+                    /* Gray color for "Existing Accounts" */
+                }
+        
+                .card-body {
+                    padding: 20px;
+                    font-size: 14px;
+                }
+        
+                /* Button Styling */
+                .btn-save {
+                    background-color: #28a745;
+                    color: #fff;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
+                }
+        
+                .btn-save:hover {
+                    background-color: #218838;
+                    transform: scale(1.05);
+                }
+        
+                .btn-delete {
+                    background-color: #dc3545;
+                    color: #fff;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
+                }
+        
+                .btn-delete:hover {
+                    background-color: #c82333;
+                    transform: scale(1.05);
+                }
+        
+                /* Table Styling */
+                .table-container {
+                    max-height: 500px;  /* Adjust this value based on your needs */
+                    overflow-y: auto;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                }
+        
+                .table {
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    width: 100%;
+                    font-size: 14px;
+                    color: #333;
+                    background-color: #fff;
+                    margin-top: 0;  /* Remove top margin */
+                    text-align: center;
+                }
+        
+                .table thead {
+                    background-color: #f8f9fa;
+                    font-weight: bold;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+                }
+        
+                .table thead th {
+                    background-color: #f8f9fa;  /* Match the header background */
+                    border-bottom: 2px solid #dee2e6;
+                }
+        
+                .table th,
+                .table td {
+                    border: 1px solid #dee2e6;
+                    padding: 10px;
+                    vertical-align: middle;
+                    text-align: center;
+                }
+        
+                /* Ensure proper border rendering for sticky header */
+                .table thead th {
+                    border-top: none;
+                    box-shadow: inset 0 1px 0 #dee2e6, inset 0 -1px 0 #dee2e6;
+                }
+        
+                /* Custom scrollbar styling */
+                .table-container::-webkit-scrollbar {
+                    width: 8px;
+                }
+        
+                .table-container::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+        
+                .table-container::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+        
+                .table-container::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+        
+                .table tbody tr:hover {
+                    background-color: #f1f3f5;
+                    cursor: pointer;
+                }
+        
+                .table td input[type="text"],
+                .table td input[type="email"] {
+                    border: 1px solid #ced4da;
+                    border-radius: 4px;
+                    padding: 5px 8px;
+                    width: 100%;
+                    font-size: 13px;
+                    color: #495057;
+                }
+        
+                /* Form Styling */
+                .form-label {
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                    display: block;
+                    color: #333;
+                }
+        
+                .form-control {
+                    border: 1px solid #ced4da;
+                    border-radius: 6px;
+                    padding: 10px;
+                    font-size: 14px;
+                    color: #495057;
+                    margin-bottom: 15px;
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                }
+        
+                .form-control:focus {
+                    border-color: #ff4d4f;
+                    box-shadow: 0 0 5px rgba(255, 77, 79, 0.25);
+                }
+        
+                /* Flash Messages */
+                .alert {
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                    border-radius: 4px;
+                    padding: 10px;
+                    font-weight: bold;
+                }
+        
+                /* Styling for the dropdowns (select elements) */
+                select.form-control {
+                    font-size: 14px;
+                    padding: 8px 12px;
+                    border: 1px solid #ced4da;
+                    border-radius: 6px;
+                    background-color: #fff;
+                    color: #495057;
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                }
+        
+                /* Hover and focus effects */
+                select.form-control:focus {
+                    border-color: #007bff;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+                    outline: none;
+                }
+        
+                /* Optional: Increase width for better readability */
+                select.form-control {
+                    width: 100%;
+                    /* Ensures it takes the full width of the container */
+                }
+        
+                /* Improve spacing between the dropdowns */
+                .mb-3 {
+                    margin-bottom: 20px;
+                }
+        
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .card-body {
+                        padding: 15px;
+                    }
+        
+                    .btn-save,
+                    .btn-delete {
+                        font-size: 12px;
+                        padding: 5px 10px;
+                    }
+        
+                    table th,
+                    table td {
+                        font-size: 12px;
+                        padding: 8px;
+                    }
+                }
+
+    /* Activity Logs Table Styles */
+    .activity-logs-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    .activity-logs-table {
+        margin-bottom: 0;
+    }
+
+    .activity-logs-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 1;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .activity-logs-table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    /* Custom scrollbar styling */
+    .activity-logs-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .activity-logs-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .activity-logs-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .activity-logs-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+            </style>
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar at the top -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark" style="padding-left: 45px; height: 80px; padding-bottom: 15px; padding-top: 10px;">
+        <img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}" 
+        alt="Campus Logo" height="75" class="me-2">
+        <!-- Navbar brand -->
+        <a class="navbar-brand ps-3" href="{{ url_for('csd_dashboard') }}">CSD <span style="text-transform: uppercase; font-style: italic;">{{
+            session['campus'] }} MANAGE ACCOUNT</span></a>
+        <!-- Spacer to push "Sign-out" to the right -->
+        <div class="ms-auto"></div>
+
+        <!-- Sign-out Icon and Link -->
+        <!--<ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading"></div>
+                        <a class="nav-link" href="{{ url_for('csd_dashboard') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Report
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('electricity_report') }}">Electricity Report</a>
+                                <a class="nav-link" href="{{ url_for('fuel_emissions_report') }}">Fuel Emissions
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('water_report') }}">Water Consumption Report</a>
+                                <a class="nav-link" href="{{ url_for('treated_water_report') }}">Treated Water
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('waste_segregation_report') }}">Waste Segregation
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('waste_unseg_report') }}">Waste Unsegregation
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('food_consumption_report') }}">Food Consumption
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('lpg_consumption_report') }}">LPG Consumption
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('flight_emissions_report') }}">Flight Emissions
+                                    Report</a>
+                                <a class="nav-link" href="{{ url_for('accommodation_emissions_report') }}">Accommodation
+                                    Emissions Report</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                            Analytics
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('csdanalytics') }}">Emission Trends</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="{{ url_for('manage_account') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                            Manage Account
+                        </a>
+                        <a class="nav-link" href="{{ url_for('csd') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                            User's Guide
+                        </a>
+                        <div class="logout-container">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-power-off fa-fw"></i> Sign-out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Main Content Area -->
+        <div id="layoutSidenav_content">
+            <div class="container mt-5">
+                <h1 class="mt-4"
+                    style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold; color: #333;">
+                    <i class="fas fa-users-cog" style="color: #007bff;"></i> Manage Accounts
+                </h1>
+                <div class="row">
+                    <!-- Manage Account Form -->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Create New Account</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Directions -->
+                                <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
+                                    Fill out the form below to create a new account. Make sure all fields are filled out
+                                    accurately. Select the appropriate office and campus from the dropdown menus.
+                                </p>
+
+                                <!-- Flash Messages -->
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
+
+                                <form action="{{ url_for('manage_account') }}" method="POST">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" required>
+                                    </div>
+                                    <!-- Predefined Office for SDO -->
+                                    <input type="hidden" name="office" value="Sustainable Development Office">
+
+                                    <div class="mb-3">
+                                        <label for="campus" class="form-label">Campus</label>
+                                        <select class="form-control" id="campus" name="campus" required>
+                                            <option value="" selected disabled>Select Campus</option>
+                                            <option value="Alangilan">Alangilan</option>
+                                            <option value="ARASOF-Nasugbu">ARASOF-Nasugbu</option>
+                                            <option value="Balayan">Balayan</option>
+                                            <option value="Central">Central</option>
+                                            <option value="JPLPC-Malvar">JPLPC-Malvar</option>
+                                            <option value="Lemery">Lemery</option>
+                                            <option value="Lipa">Lipa</option>
+                                            <option value="Lobo">Lobo</option>
+                                            <option value="Mabini">Mabini</option>
+                                            <option value="Pablo Borbon">Pablo Borbon</option>
+                                            <option value="Rosario">Rosario</option>
+                                            <option value="San Juan">San Juan</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Existing Accounts Table -->
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Existing Accounts</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Campus</th>
+                                                <th>Email</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if accounts %}
+                                            {% for account in accounts %}
+                                            <tr>
+                                                <form action="{{ url_for('manage_account') }}" method="POST">
+                                                    <input type="hidden" name="update_id" value="{{ account.userID }}">
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm"
+                                                            name="username" value="{{ account.username }}" required>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm"
+                                                            name="campus" value="{{ account.campus }}" required>
+                                                    </td>
+                                                    <td>
+                                                        <input type="email" class="form-control form-control-sm"
+                                                            name="email" value="{{ account.email }}" required>
+                                                    </td>
+                                                    <td>
+                                                        <input type="password" class="form-control form-control-sm"
+                                                            name="password" value="{{ account.password }}" required>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-2">
+                                                            <button type="submit" class="btn btn-save btn-sm">Save</button>
+                                                </form>
+                                                <form action="{{ url_for('manage_account') }}" method="POST">
+                                                    <input type="hidden" name="delete_id" value="{{ account.userID }}">
+                                                    <button type="submit" class="btn btn-delete btn-sm"
+                                                        onclick="return confirm('Are you sure you want to delete this account?');">Delete</button>
+                                                </form>
+                                            </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No accounts found</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Logs Table -->
+                <div class="row mt-4" style="margin-bottom: 100px;">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Activity Logs</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-logs-container">
+                                    <table class="table table-bordered table-hover activity-logs-table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Campus</th>
+                                                <th>Action</th>
+                                                <th>Report Name</th>
+                                                <th>Timestamp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if activity_logs %}
+                                            {% for log in activity_logs %}
+                                            <tr>
+                                                <td>{{ log.username }}</td>
+                                                <td>{{ log.campus }}</td>
+                                                <td>{{ log.action }}</td>
+                                                <td>{{ log.report_name }}</td>
+                                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '' }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No activity logs found</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        </main>
+    </div>
+
+
+
+
+    </div>
+    
+</body>
+
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPath = window.location.pathname;
+        let sidebarLinks = document.querySelectorAll(".nav-link");
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+
+                // If the link is inside a dropdown, open the dropdown
+                let parentCollapse = link.closest(".collapse");
+                if (parentCollapse) {
+                    parentCollapse.classList.add("show");
+                    let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                    if (dropdownToggle) {
+                        dropdownToggle.classList.add("active");
+                    }
+                }
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPath = window.location.pathname;
+        let sidebarLinks = document.querySelectorAll(".nav-link");
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPath = window.location.pathname;
+        let sidebarLinks = document.querySelectorAll(".nav-link");
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+
+                // If the link is inside a dropdown, open the dropdown
+                let parentCollapse = link.closest(".collapse");
+                if (parentCollapse) {
+                    parentCollapse.classList.add("show");
+                    let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                    if (dropdownToggle) {
+                        dropdownToggle.classList.add("active");
+                    }
+
+                    // Auto-scroll to the active report link
+                    link.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
+        });
+    });
+    </script>
+</body>

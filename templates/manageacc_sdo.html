@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDO Report</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sdo.jpg') }}" type="image/x-icon">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+.sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+            /* Hides the scrollbar */
+        }
+
+        element-selector {
+            overflow-x: scroll;
+            /* Allows horizontal scrolling */
+        }
+  body {
+    background-color: #f8f9fa;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* General Card Styling */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.card-header {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px;
+    text-transform: uppercase;
+    color: #fff;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    text-align: center;
+}
+
+.card-header.bg-primary {
+    background-color: #ff4d4f; /* Red color for "Create New Account" */
+}
+
+.card-header.bg-secondary {
+    background-color: #6c757d; /* Gray color for "Existing Accounts" */
+}
+
+.card-body {
+    padding: 20px;
+    font-size: 14px;
+}
+
+/* Button Styling */
+.btn-save {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/* Table Styling */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.table th,
+.table td {
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+}
+
+.table td input[type="text"],
+.table td input[type="email"] {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px 8px;
+    width: 100%;
+    font-size: 13px;
+    color: #495057;
+}
+
+/* Form Styling */
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 5px rgba(255, 77, 79, 0.25);
+}
+
+/* Flash Messages */
+.alert {
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    padding: 10px;
+    font-weight: bold;
+}
+/* Styling for the dropdowns (select elements) */
+select.form-control {
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #495057;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover and focus effects */
+select.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Optional: Increase width for better readability */
+select.form-control {
+    width: 100%; /* Ensures it takes the full width of the container */
+}
+
+/* Improve spacing between the dropdowns */
+.mb-3 {
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 15px;
+    }
+
+    .btn-save,
+    .btn-delete {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    table th,
+    table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Activity Logs Table Styles */
+.table-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+</style>
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- Navbar -->
+    {% include 'sdotopnav.html' %}
+        <a class="navbar-brand ps-3" href="{{ url_for('emu_dashboard') }}">SDO <span style="text-transform: uppercase; font-style: italic;">{{ session['campus'] }}</span></a>
+        <!--<ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-power-off fa-fw"></i> Sign-out
+                </a>
+            </li>
+        </ul>-->
+    </nav>
+
+    <!-- Main Layout -->
+    <div id="layoutSidenav">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+
+        <div id="layoutSidenav_content">
+            <main class="container-fluid px-4">
+                <h1 class="mt-4" style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold; color: #333;">
+                    <i class="fas fa-users-cog" style="color: #007bff;"></i> Manage Accounts
+                </h1>
+                                <div class="row">
+                    <!-- Account Creation Form -->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5>Create New Account</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Directions -->
+                                <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
+                                    Fill out the form below to create a new account. Make sure all fields are filled out 
+                                    accurately. Select the appropriate office and campus from the dropdown menus.
+                                </p>
+        
+                                <!-- Flash Messages -->
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
+        
+                                <form action="{{ url_for('manageacc_sdo') }}" method="POST">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" required>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="office" class="form-label">Office</label>
+                                        <select class="form-control" id="office" name="office" required>
+                                            <option value="" disabled selected>Select Office</option>
+                                            <option value="Environmental Management Unit">Environmental Management Unit</option>
+                                            <option value="External Affair">External Affair</option>
+                                            <option value="Procurement Office">Procurement Office</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="campus" class="form-label">Campus</label>
+                                        <select class="form-control" id="campus" name="campus" required>
+                                            <option value="" disabled selected>Select Campus</option>
+                                            <option value="Alangilan">Alangilan</option>
+                                            <option value="ARASOF-Nasugbu">ARASOF-Nasugbu</option>
+                                            <option value="Balayan">Balayan</option>
+                                            <option value="Central">Central</option>
+                                            <option value="JPLPC-Malvar">JPLPC-Malvar</option>
+                                            <option value="Lemery">Lemery</option>
+                                            <option value="Lipa">Lipa</option>
+                                            <option value="Lobo">Lobo</option>
+                                            <option value="Mabini">Mabini</option>
+                                            <option value="Pablo Borbon">Pablo Borbon</option>
+                                            <option value="Rosario">Rosario</option>
+                                            <option value="San Juan">San Juan</option>
+                                        </select>
+                                    </div>
+                                    
+        
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+        
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                    </div>
+        
+                                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Existing Accounts Table -->
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-secondary text-white">
+                                <h5>Existing Accounts</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Office</th>
+                                            <th>Campus</th>
+                                            <th>Email</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if accounts %}
+                                        {% for account in accounts %}
+                                        <tr>
+                                            <form action="{{ url_for('manageacc_sdo') }}" method="POST">
+                                                <input type="hidden" name="update_id" value="{{ account.userID }}">
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm" name="username" value="{{ account.username }}" required>
+                                                </td>
+                                                <td>{{ account.office }}</td>
+                                                <td>{{ account.campus }}</td>
+                                                <td>
+                                                    <input type="email" class="form-control form-control-sm" name="email" value="{{ account.email }}" required>
+                                                </td>
+                                                <td class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-save btn-sm">Save</button>
+                                            </form>
+                                            <form action="{{ url_for('manageacc_sdo') }}" method="POST">
+                                                <input type="hidden" name="delete_id" value="{{ account.userID }}">
+                                                <button type="submit" class="btn btn-delete btn-sm"
+                                                    onclick="return confirm('Are you sure you want to delete this account?');">Delete</button>
+                                            </form>
+                                                </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No accounts found</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Logs Table -->
+                <div class="row mt-4" style="margin-bottom: 100px;">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Activity Logs - {{ session['campus'] }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-light sticky-top">
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Campus</th>
+                                                <th>Action</th>
+                                                <th>Report Name</th>
+                                                <th>Timestamp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if activity_logs %}
+                                            {% for log in activity_logs %}
+                                            {% if log.campus == session['campus'] %}
+                                            <tr>
+                                                <td>{{ log.username }}</td>
+                                                <td>{{ log.campus }}</td>
+                                                <td>{{ log.action }}</td>
+                                                <td>{{ log.report_name }}</td>
+                                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '' }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No activity logs found for {{ session['campus'] }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+    
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+    
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+    
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let dropdowns = document.querySelectorAll('[data-bs-toggle="collapse"]');
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener("click", function () {
+                    let target = document.querySelector(this.getAttribute("data-bs-target"));
+                    if (target.classList.contains("show")) {
+                        target.classList.remove("show");
+                    } else {
+                        target.classList.add("show");
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+
+</html>

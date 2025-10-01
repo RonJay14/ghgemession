@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Affair Dashboard</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/ea.jpg') }}" type="image/x-icon">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>  
+
+    <style>
+           .sb-sidenav {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .sb-sidenav .sb-sidenav-menu {
+        padding: 20px;
+        overflow-y: auto; /* Enable vertical scrolling */
+        max-height: 100vh; /* Ensure the sidebar does not exceed the viewport height */
+    }
+
+    .sb-sidenav .sb-sidenav-menu .nav {
+        flex-direction: column;
+    }
+
+    .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+        color: #adb5bd;
+        padding: 10px 15px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+        background-color: #495057;
+        color: #fff;
+    }
+
+    .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+        font-size: 1.1em;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #ced4da;
+    }
+
+    .sb-sidenav-menu .nav-link,
+    .sb-sidenav-menu .sb-sidenav-menu-heading {
+        text-transform: uppercase;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px; /* Width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #6c757d; /* Color of the scrollbar thumb */
+        border-radius: 10px; /* Rounded corners of the scrollbar thumb */
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: #343a40; /* Color of the scrollbar track */
+    }
+
+    /* Layout Styling */
+    #layoutSidenav {
+        display: flex;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    #layoutSidenav_nav {
+        width: 250px;
+        background-color: #495057;
+        flex-shrink: 0;
+    }
+
+    .collapse {
+        max-height: 300px; /* Set a max height for the dropdown */
+        overflow-y: auto; /* Enable vertical scrolling for the dropdown */
+    }
+        .sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+            /* Hides the scrollbar */
+        }
+
+        element-selector {
+            overflow-x: scroll;
+            /* Allows horizontal scrolling */
+        }
+
+        /* Modern Color Scheme */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #1abc9c;
+            --background-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        /* Sidebar */
+        #layoutSidenav_nav {
+            background-color: var(--secondary-color);
+        }
+
+        .sb-sidenav-menu .nav-link {
+            color: var(--white);
+        }
+
+        .sb-sidenav-menu .nav-link:hover {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+
+        /* Cards */
+
+        .card-1 {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 0px 11px 1px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+        }
+
+        .card,
+        .cardt {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 10px 10px 13px -10px rgba(0, 0, 0, 9);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+            background-blend-mode: hard-light;
+            /* Blend the background image with solid color */
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.7) !important;
+            background-color: #444 !important;
+            /* Change this to your desired hover color */
+            transition: background-color 0 .3s ease;
+            /* Smooth transition */
+            background-blend-mode: normal;
+            /* Reveal the background image on hover */
+
+
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+        }
+
+        .card-body,
+        .card-bodyt {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 15px 15px 10px -10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, var(--start-color), var(--end-color));
+            padding: 1.5rem;
+            opacity: 0.8;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+            /* Add opacity here */
+
+        }
+
+
+        .card-body:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+            opacity: 0.05;
+        }
+
+
+        .bot-card {
+            font-size: 0.7em;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .card-body:hover~.view {
+            display: block !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .top-nav::-webkit-scrollbar {
+            display: none;
+            /* Hides scrollbar in Chrome, Safari */
+        }
+    </style>
+    
+</head>
+
+<body class="sb-nav-fixed">
+<!-- Navbar -->
+<nav class="sb-topnav navbar navbar-expand navbar-dark" style="padding-left: 45px; height: 80px; padding-bottom: 15px; padding-top: 10px;">
+    <!-- Campus Logo -->
+    <img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}" 
+         alt="Campus Logo" height="75" class="me-2">
+    
+    <!-- Navbar Brand -->
+    <a class="navbar-brand ps-3" href="{{ url_for('external_dashboard') }}">
+        EXTERNAL AFFAIRS <span style="text-transform: uppercase; font-style: italic;">{{ session['campus'] }} DASHBOARD</span>
+    </a>
+
+    <!-- Sign-out 
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">
+                <i class="fas fa-power-off fa-fw"></i> Sign-out
+            </a>
+        </li>
+    </ul>-->
+</nav>
+
+
+        <div id="layoutSidenav" style="overflow: hidden;">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu" style="margin-top: 60px;">
+                        <div class="nav">
+                            <a class="nav-link" href="{{ url_for('external_dashboard') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+    
+    
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                                Analytics
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                 
+                                    <a class="nav-link" href="{{ url_for('ea_analytics') }}">Emission Trends</a>
+    
+                                    
+                                </nav>
+                            </div>
+    
+                            
+                            <!-- External Affairs Links -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseExternal" aria-expanded="false" aria-controls="collapseExternal">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plane"></i></div>
+                                Consumption Report
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseExternal" aria-labelledby="headingExternal" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{{ url_for('flight') }}">Flight</a>
+                                        <a class="nav-link" href="{{ url_for('accommodation') }}">Accommodation</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link" href="{{ url_for('ea') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                                User's Guide
+                            </a>
+                            <div class="logout-container">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ url_for('logout') }}">
+                                            <i class="fas fa-power-off fa-fw"></i>&nbsp; Sign-out
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div> 
+                        </div>
+                    </div>
+                </nav>
+            </div>
+           
+    
+            <style>
+                /* Cards */
+        
+                .card-1 {
+                    border: none;
+                    border-radius: 10px;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    box-shadow: 0px 0px 11px 1px rgba(0, 0, 0, 0.1);
+                    background: linear-gradient(135deg, var(--start-color), var(--end-color));
+                }
+        
+                .card,
+                .cardt {
+                    border: none;
+                    border-radius: 10px;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    box-shadow: 10px 10px 13px -10px rgba(0, 0, 0, 9);
+                    background: linear-gradient(135deg, var(--start-color), var(--end-color));
+                    background-blend-mode: hard-light;
+                    /* Blend the background image with solid color */
+                    background-size: cover;
+                    background-position: center;
+                }
+        
+        
+                .card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.7) !important;
+                    background-color: #444 !important;
+                    /* Change this to your desired hover color */
+                    transition: background-color 0 .3s ease;
+                    /* Smooth transition */
+                    background-blend-mode: normal;
+                    /* Reveal the background image on hover */
+        
+        
+                }
+        
+                .card-title {
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    margin-bottom: 0.4rem;
+                }
+        
+                .card-body,
+                .card-bodyt {
+                    border: none;
+                    border-radius: 10px;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    box-shadow: inset 15px 15px 10px -10px rgba(0, 0, 0, 0.5);
+                    background: linear-gradient(135deg, var(--start-color), var(--end-color));
+                    padding: 1.5rem;
+                    opacity: 0.8;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+                    /* Add opacity here */
+        
+                }
+        
+        
+                .card-body:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+                    opacity: 0.05;
+                }
+        
+        
+                .bot-card {
+                    font-size: 0.7em;
+                }
+        
+                /* Footer */
+                .footer {
+                    background-color: var(--primary-color);
+                    color: var(--white);
+                    padding: 1rem;
+                    text-align: center;
+                }
+        
+                .card-body:hover~.view {
+                    display: block !important;
+                }
+        
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .card-title {
+                        font-size: 1rem;
+                    }
+        
+                    .card-body {
+                        padding: 1rem;
+                    }
+                }
+        
+                /* Animation */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(100px);
+                    }
+        
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+        
+                .fade-in {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+        
+                .top-nav::-webkit-scrollbar {
+                    display: none;
+                    /* Hides scrollbar in Chrome, Safari */
+                }
+        
+                /* style2 */
+                .top-info {
+                    position: relative;
+                    overflow: hidden;
+                    /* Prevents overflow */
+                    color: rgb(255, 255, 255);
+                    background: linear-gradient(to bottom,
+                            rgba(76, 73, 73, 0.7) 0%,
+                            /* Solid red on the left */
+                            /* rgba(94, 94, 94, 0.485) 70%, */
+                            /* Gradual fade */
+                            rgba(76, 73, 73, 0.7) 90%),
+                        /* Fully transparent in the middle */
+                        url('static/images/bg2.jpg');
+                    /* Your image */
+                    /* filter: grayscale(100%); */
+                    background-size: cover;
+                    /* Ensures image covers the div */
+                    background-position: center bottom;
+                    /* Align image to the right */
+                    background-blend-mode: normal;
+                    /* Ensures proper blending */
+        
+                    transition: background 0.5s ease-in-out;
+                    /* Smooth transition if needed */
+                    font-weight: bold;
+                    font-family: sans-serif;
+                }
+        
+                @media (max-width: 767px) {
+                    .con3 {
+                        position: static !important;
+                        bottom: 0px !important;
+                        left: 0% !important;
+                        transform: translateX(0%) !important;
+                    }
+        
+                    .con4 {
+                        margin-top: calc(80px + 20px) !important;
+                    }
+        
+                    .w1 {
+                        margin-top: 20px;
+                    }
+                }
+        
+                @media (max-width: 420px) {
+                    .con4 {
+                        margin-top: calc(300px + 20px) !important;
+                    }
+                }
+        
+                /* style3 */
+                .emi {
+                    position: relative;
+                    overflow: hidden;
+                    /* Prevents overflow */
+        
+                    background: linear-gradient(to right,
+                            rgb(35, 35, 35) 0%,
+                            /* Solid red on the left */
+                            rgba(35, 35, 35, 0.698) 70%,
+                            /* Gradual fade */
+                            rgba(5, 35, 35, 0.348) 90%),
+                        /* Fully transparent in the middle */
+                        url('static/images/emi.jpg');
+                    /* Your image */
+        
+                    background-size: cover;
+                    /* Ensures image covers the div */
+                    background-position: center bottom;
+                    /* Align image to the right */
+                    background-blend-mode: normal;
+                    /* Ensures proper blending */
+        
+                    transition: background 0.5s ease-in-out;
+                    /* Smooth transition if needed */
+                }
+        
+                .tree {
+                    position: relative;
+                    overflow: hidden;
+                    /* Prevents overflow */
+        
+                    background: linear-gradient(to right,
+                            rgb(23, 46, 23) 0%,
+                            /* Solid red on the left */
+                            rgba(23, 46, 23, 0.876) 60%,
+                            /* Gradual fade */
+                            rgba(23, 46, 23, 0.348) 90%),
+                        /* Fully transparent in the middle */
+                        url('static/images/tre.jpg');
+                    /* Your image */
+        
+                    background-size: cover;
+                    /* Ensures image covers the div */
+                    background-size: 110%;
+                    /* Zoom in to 150% of the original size */
+                    background-position: 0px -230px;
+                    /* Move the image */
+                    background-blend-mode: normal;
+                    /* Ensures proper blending */
+                    /* background-attachment: fixed; */
+        
+        
+                    transition: background 0.5s ease-in-out;
+                    /* Smooth transition if needed */
+                }
+        
+                /* style4 */
+        
+                :root {
+                    --background-gradient: linear-gradient(178deg, #ffff33 10%, #3333ff);
+                    --gray: #34495e;
+                    --darkgray: #2c3e50;
+                }
+        
+                .dropdown-container {
+                    display: flex;
+                    justify-content: flex-end;
+                    /* Align to the right */
+                    width: 100%;
+                    margin-top: 40px;
+                }
+        
+                /* Wrapper for the select element */
+        
+        
+                /* Custom styles for the dropdown */
+                #yearFilter {
+                    /* Reset Select */
+                    appearance: none;
+                    outline: 10px red;
+                    border: 0;
+                    box-shadow: none;
+                    /* Personalize */
+                    flex: 1;
+                    padding: 0 1em;
+                    color: #fff;
+                    background-color: var(--darkgray);
+                    background-image: none;
+                    cursor: pointer;
+                }
+        
+                #yearFilter::-ms-expand {
+                    display: none;
+                }
+        
+                .select-wrapper {
+                    position: relative;
+                    display: flex;
+                    width: 10em;
+                    height: 3em;
+                    border-radius: .25em;
+                }
+        
+        
+        
+                /* Add the icon inside the select wrapper */
+                .select-wrapper::after {
+                    content: '\25BC';
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 2.5em;
+                    /* Adjust width as needed */
+                    height: max-content;
+                    /* Full height */
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    padding: 7px;
+                    border-radius: .25em;
+                    background-color: #34495e;
+                    transition: .25s all ease;
+                    pointer-events: none;
+                }
+        
+                /* Custom styles for the dropdown options */
+                .select-wrapper:hover::after {
+                    color: #f39c12;
+                }
+        
+        
+                @media (max-width: 1200px) and (min-width: 767px) {
+                    .row-cols-md-5>.col {
+                        flex: 0 0 calc(100% / 3);
+                        /* 3 columns */
+                        max-width: calc(100% / 3);
+                    }
+                }
+            </style>
+    
+            <div id="layoutSidenav_content">
+                <div class="top-nav" style="scroll-snap-type: y mandatory;  overflow-y: scroll; height: 100vh;">
+    
+                    <div class="position-relative" style="height: 100%;margin-bottom: 200px;">
+                        <div class="top-info mb-6"
+                            style="scroll-snap-align: start; height: 75%; padding-top: 15%; overflow: visible;">
+                            <h1 class="mt-4" style="font-weight: 700; font-size: 2em; text-align: center;">EXTERNAL AFFAIRS
+                                DASHBOARD</h1>
+                            <h1 class="mt-2" style="text-align: center; font-size:1em;color: #d3d3d3;">Consumption Trends
+                            </h1>
+    
+                            <div class="container con3 mt-5"
+                            style="color: #555555; font-weight:normal; position: absolute; bottom: -100px;  left: 50%;transform: translateX(-50%);">
+                            <div class="row row-cols-1 row-cols-md-3 g-4 d-flex">
+                                <div class="col-sm-12 col-md-12">
+                                    <div class="h-100 d-flex flex-column justify-content-between"
+                                        style="background-color: #f2edf5; padding: 30px; padding-top: 50px; border-color: #cacaca; border-radius: 10px; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);">
+                                        <p style="margin-bottom: 0; line-height: 1.4; text-align: justify; font-size: 1em;">
+                                            The External Affairs Dashboard showcases emission trends for flight and
+                                            accommodation activities. Both metrics show a consistent and stable pattern
+                                            throughout the year, with minimal variations across months. This indicates a steady
+                                            rate of related emissions, supporting long-term planning and monitoring efforts in
+                                            sustainability-focused operations.
+                                    </div>
+                                </div>
+                            </div>
+        
+                        </div>
+                        </div>
+                    </div>
+    
+                    <div class="container con4" style="scroll-snap-align: start;">
+                        <div class="row mb-4 mt-1">
+                            <div class="dropdown-container">
+                                <div class="select-wrapper">
+                                    <!-- <label for="yearFilter" class="font-weight-bold">Select Year:</label> -->
+                                    <select id="yearFilter" class="form-control" onchange="filterByYear()">
+                                        {% for year in range(current_year, current_year - 10, -1) %}
+                                        <option value="{{ year }}" {% if year==selected_year %}selected{% endif %}>
+                                            {{ year }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                        </div>
+    
+    
+                        <div class="row mb-5 ">
+                            <!-- Total Emission Card -->
+                            <div class="col-md-6 w1">
+                                <div class="cardt emi bg-dark text-white h-100">
+                                    <div class="card-bodyt">
+                                        <div class="card-title">Total Emission</div>
+                                        <div>
+                                            <strong>Total CO₂ Emission:</strong>
+                                            <span style="font-size: 1.5em; font-weight: bold; color: white;">
+                                                {{ "%.2f"|format(forecast_data['flight_forecast']['prophet']['forecast'][-1] + forecast_data['accommodation_forecast']['prophet']['forecast'][-1]) }} CO₂e
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Tree Offset Card 
+                            <div class="col-md-6 w1">
+                                <div class="cardt tree bg-success text-white h-100">
+                                    <div class="card-bodyt">
+                                        <div class="card-title">Tree Offset</div>
+                                        <div>
+                                            <strong>Total Tree Offset for {{ selected_year }}:</strong>
+                                        </div>
+                                        <span style="font-size: 1.5em; font-weight: bold; color: white;">
+                                            {{ "{:,.2f}".format(current_emission_data['tree_offset']) }} Trees
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+    
+                        <div class="row row-cols-1 row-cols-md-5 g-4">
+                            <!-- Electricity Card -->
+                            <div class="col mb-1">
+                                <div class="card text-white h-100" style="background-color: #9069bc; background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/a.jpg')">
+                                <div class="card-body"
+                                    onclick="window.location.href='accommodation'"
+                                    style="background-color: #9069bc">
+                                    <div class="card-title">Accommodation</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.5em; font-weight: bold; color: rgb(255, 255, 255);">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-journals" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2 2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2" />
+                                                <path
+                                                    d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0" />
+                                            </svg>
+                                            {{ "%.2f"|format(forecast_data['accommodation_forecast']['prophet']['forecast'][-1] if forecast_data['accommodation_forecast']['prophet']['forecast'] else 0) }} CO₂e
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> Flight Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: rgb(255, 255, 255);">
+                                            {{ total_accommodation_records }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                           
+    
+                            <!-- Fuel Card -->
+                            <div class="col mb-1">
+                                <div class="card bg-dark text-white h-100" style=" background-image: linear-gradient(
+                                    rgba(0, 0, 0, 0.2),
+                                    rgba(0, 0, 0, 0.2)
+                                  ) ,url('static/images/fl.jpg')">
+                                <div class="card-body" onclick="window.location.href='flight'"
+                                    style="background-color:#1e1e1e">
+                                    <div class="card-title">Flight</div>
+                                    <!-- Horizontal Divider -->
+                                    <hr style="margin-bottom:1px; border-top: 2px solid white; opacity: 0.7;">
+                                    <div><strong>Current Emission:</strong>
+                                        <span style="font-size: 1.5em; font-weight: bold; color: white;">
+                                            <br>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-airplane" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849m.894.448C7.111 2.02 7 2.569 7 3v4a.5.5 0 0 1-.276.447l-5.448 2.724a.5.5 0 0 0-.276.447v.792l5.418-.903a.5.5 0 0 1 .575.41l.5 3a.5.5 0 0 1-.14.437L6.708 15h2.586l-.647-.646a.5.5 0 0 1-.14-.436l.5-3a.5.5 0 0 1 .576-.411L15 11.41v-.792a.5.5 0 0 0-.276-.447L9.276 7.447A.5.5 0 0 1 9 7V3c0-.432-.11-.979-.322-1.401C8.458 1.159 8.213 1 8 1s-.458.158-.678.599" />
+                                            </svg>
+                                            {{ "%.2f"|format(forecast_data['flight_forecast']['prophet']['forecast'][-1] if forecast_data['flight_forecast']['prophet']['forecast'] else 0) }} CO₂e
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong class="bot-card"> Accommodation Records:</strong>
+                                        <span style="font-size: 1rem; font-weight: bold; color: white;">
+                                            {{ total_flight_records }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+    
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+    
+                    <style>
+                        /* Animation for bounce effect */
+                        @keyframes bounce {
+    
+                            0%,
+                            20%,
+                            50%,
+                            80%,
+                            100% {
+                                transform: translateY(0);
+                            }
+    
+                            40% {
+                                transform: translateY(-10px);
+                            }
+    
+                            60% {
+                                transform: translateY(-5px);
+                            }
+                        }
+                    </style>
+    
+                    <br>
+                    <br>
+    
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        function filterByYear() {
+            const selectedYear = document.getElementById('yearFilter').value;
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('year', selectedYear);
+            window.location.href = currentUrl.toString();
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentPath = window.location.pathname;
+            let sidebarLinks = document.querySelectorAll(".nav-link");
+
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    // If the link is inside a dropdown, open the dropdown
+                    let parentCollapse = link.closest(".collapse");
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                        let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    </body>
+
+    </html>

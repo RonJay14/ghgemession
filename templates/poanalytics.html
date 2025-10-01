@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Analytics</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sdo.jpg') }}" type="image/x-icon">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emucss.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>
+
+
+    <style>
+        /* Modern Color Scheme */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #1abc9c;
+            --background-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+        }
+
+        /* Enhanced Headings */
+        h1, h3 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* Enhanced Button Styles */
+        .btn-primary {
+            background-color: transparent;
+            color: #000;
+            border: black;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #f39c12;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card Enhancements */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .sb-sidenav {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu {
+            padding: 20px;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav {
+            flex-direction: column;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .sb-sidenav-menu .nav-link,
+        .sb-sidenav-menu .sb-sidenav-menu-heading {
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+            /* Hides the scrollbar */
+        }
+
+        element-selector {
+            overflow-x: scroll;
+            /* Allows horizontal scrolling */
+        }
+        /* Layout Styling */
+        #layoutSidenav {
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+    
+        #layoutSidenav_nav {
+            width: 250px;
+            background-color: #495057;
+            flex-shrink: 0;
+        }
+    
+        #layoutSidenav_content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+    
+        #layoutSidenav_nav .nav-link {
+            color: #fff;
+            font-weight: 500;
+        }
+    
+        #layoutSidenav_nav .nav-link:hover {
+            color: #fff;
+            background-color: #6c757d;
+        }
+    
+        .header {
+            background-color: #495057;
+            color: #ffffff;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+    
+        .header img {
+            height: 60px;
+        }
+    
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+    
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+            color: #000;
+        }
+        .content-area {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto; /* Enable scrolling */
+}
+.text-center {
+    margin-bottom: 50px; /* Add margin to avoid clipping at the bottom */
+}
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .scrollable-menu {
+        max-height: 300px; /* Set a max height for the scrollable area */
+        overflow-y: auto; /* Enable vertical scrolling */
+    }
+    .pagination .page-link {
+    background-color: white;
+    color: #d50000;
+    border-color: #d50000;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-link:hover {
+    background-color: #a30000; /* Darker red on hover */
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #d50000;
+    color: white;
+    border-color: #d50000;
+}
+
+    
+        /* Sidebar and Table Side-by-Side */
+        #mainContent {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+        }
+    
+        .content-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-x: auto;
+        }
+    
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Year Selector Styling */
+        .year-form-container {
+            margin-bottom: 0; /* Remove bottom margin since it's now in the button container */
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        #yearForm {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dropdown-year {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-year-btn {
+            background-color: transparent;
+            color: rgb(0, 0, 0);
+            border: black;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-year-btn:hover {
+            background-color: #f39c12;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-year-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--white);
+            min-width: 120px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropdown-year-content a {
+            color: var(--primary-color);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-year-content a:hover {
+            background-color: var(--background-color);
+        }
+
+        .dropdown-year:hover .dropdown-year-content {
+            display: block;
+        }
+
+        /* Custom scrollbar for dropdown */
+        .dropdown-year-content::-webkit-scrollbar {
+            width: 6px;
+            display: block;
+        }
+
+        .dropdown-year-content::-webkit-scrollbar-track {
+            background: var(--background-color);
+            border-radius: 3px;
+        }
+
+        .dropdown-year-content::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark" style="padding-left: 45px; height: 80px; padding-bottom: 15px; padding-top: 10px; background-color: #2c3e50; font-weight: bold;">
+        <!-- Campus Logo -->
+<img src="{{ url_for('static', filename='images/campuses/' + session['campus']|lower + '.png') }}" 
+alt="Campus Logo" height="75" class="me-2">
+        <a class="navbar-brand ps-3" href="{{ url_for('procurement_dashboard') }}">PROCUREMENT <span style="text-transform: uppercase; font-style: italic;">{{ session['campus'] }} ANALYTICS</span></a>
+         <!-- Spacer to push "Sign-out" to the right -->
+         <div class="ms-auto"></div>
+    
+         <!-- Sign-out Icon and Link 
+         <ul class="navbar-nav">
+             <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('logout') }}">
+                     <i class="fas fa-power-off fa-fw"></i> Sign-out
+                 </a>
+             </li>
+         </ul>-->
+    </nav>
+
+     <!-- Sidebar and Main Content Layout -->
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav" style="margin-top: 60px;">
+                        <a class="nav-link" href="{{ url_for('procurement_dashboard') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                            Analytics
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseAnalytics" aria-labelledby="headingTwo"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+
+                                <a class="nav-link" href="{{ url_for('poanalytics') }}">Emission Trends</a>
+
+
+                            </nav>
+                        </div>
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseProcurement" aria-expanded="false"
+                            aria-controls="collapseProcurement">
+                            <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                            Consumption Report
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseProcurement" aria-labelledby="headingProcurement"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ url_for('food_consumption') }}">Food</a>
+                                <a class="nav-link" href="{{ url_for('lpg_consumption') }}">LPG</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="{{ url_for('po') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                            User's Guide
+                        </a>
+                        <div class="logout-container">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-power-off fa-fw"></i>&nbsp; Sign-out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div> 
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Emission Trends</h1>
+                    
+
+                    <div class="row">
+                        <div class="col-12 button-container">
+                            <div class="dropdown-year">
+                                <button class="dropdown-year-btn">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Year: {{ selected_year }}
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </button>
+                                <div class="dropdown-year-content">
+                                    {% for year in range(current_year, 2019, -1) %}
+                                        <a href="{{ url_for('poanalytics', year=year) }}"
+                                           {% if year == selected_year %}class="active"{% endif %}>
+                                            {{ year }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <button id="toggleForecast" class="btn btn-primary">
+                                <i class="fas fa-chart-line me-2"></i>Show Forecast
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Charts for Each Consumption -->
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-utensils me-1"></i>
+                                    Food Waste Consumption Forecast
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="foodWasteChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LPG Consumption Forecast Chart -->
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-gas-pump me-1"></i>
+                                    LPG Consumption Forecast
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="lpgChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/socket.io/4.0.1/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectedYear = {{ selected_year }}; // Year selected in Flask
+        const labels = {{ labels | tojson }}; // Labels for the months (e.g., "Jan/23", "Feb/23", ...)
+ 
+        const foodWasteForecastData = {{ forecast_data.food_waste_forecast.prophet.forecast | tojson }};
+        const foodWasteHistoricalData = {{ food_waste_data | tojson }};
+        const lpgForecastData = {{ forecast_data.lpg_forecast.prophet.forecast | tojson }};
+        const lpgHistoricalData = {{ lpg_data | tojson }};
+ 
+        let showForecast = false; // Initial state: Forecast hidden
+ 
+        /**
+         * Function to create a line chart displaying historical and forecast data.
+         * @param {string} chartId - The HTML ID of the canvas element.
+         * @param {string} label - Chart label, such as "Food Waste".
+         * @param {Array} historicalData - Array of historical data values.
+         * @param {Array} forecastData - Array of forecasted data values.
+         * @param {Array} chartLabels - Labels for the x-axis.
+         * @param {string} historicalColor - Color for the historical data line.
+         * @param {string} forecastColor - Color for the forecast data line.
+         * @param {string} yAxisLabel - Label for the Y-axis (e.g., "kg CO2/kWh").
+         */
+        function createForecastChart(chartId, label, historicalData, forecastData, chartLabels, historicalColor, forecastColor, yAxisLabel) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+ 
+            // Create the chart
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        {
+                            label: `${label} (Actual)`,
+                            data: historicalData,
+                            borderColor: historicalColor,
+                            backgroundColor: historicalColor,
+                            fill: false,
+                            borderWidth: 2,
+                            pointBackgroundColor: historicalColor,
+                            showLine: true
+                        },
+                        {
+                            label: `${label} (Forecast)`,
+                            data: forecastData,
+                            borderColor: forecastColor,
+                            backgroundColor: forecastColor,
+                            fill: false,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointBackgroundColor: forecastColor,
+                            showLine: true,
+                            hidden: !showForecast // Hide forecast by default
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `${label} Forecast for ${selectedYear}`
+                        },
+                        legend: {
+                            display: true,
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Month' },
+                            ticks: { maxRotation: 0, minRotation: 0 }
+                        },
+                        y: {
+                            title: { display: true, text: yAxisLabel },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+ 
+        // Create the charts
+        const foodWasteChart = createForecastChart(
+            'foodWasteChart',
+            'Food Waste',
+            foodWasteHistoricalData,
+            foodWasteForecastData,
+            labels,
+            'orange',
+            'brown',
+            'GHG Emission (kg CO2)'
+        );
+ 
+        const lpgChart = createForecastChart(
+            'lpgChart',
+            'LPG Consumption',
+            lpgHistoricalData,
+            lpgForecastData,
+            labels,
+            'darkblue',
+            'gold',
+            'GHG Emission (kg CO2)'
+        );
+ 
+        // Add event listener to toggle forecast visibility
+        document.getElementById('toggleForecast').addEventListener('click', function () {
+            showForecast = !showForecast; // Toggle forecast visibility state
+            this.textContent = showForecast ? 'Hide Forecast' : 'Show Forecast'; // Update button text
+ 
+            // Toggle visibility of forecast datasets
+            foodWasteChart.data.datasets[1].hidden = !showForecast;
+            lpgChart.data.datasets[1].hidden = !showForecast;
+ 
+            // Update the charts
+            foodWasteChart.update();
+            lpgChart.update();
+        });
+ 
+        // Socket.IO setup for real-time updates
+        const socket = io();
+ 
+        // Listen for real-time emissions data and update the charts
+        socket.on('update_emissions', (data) => {
+            console.log('Real-time emission update:', data);
+            updateChartData(foodWasteChart, data.food_waste, 0);
+            updateChartData(lpgChart, data.lpg, 0);
+        });
+ 
+        // Listen for real-time forecast data and update the charts
+        socket.on('update_forecast', (forecastData) => {
+            console.log('Real-time forecast update:', forecastData);
+            updateChartData(foodWasteChart, forecastData.food_waste_forecast, 1);
+            updateChartData(lpgChart, forecastData.lpg_forecast, 1);
+        });
+ 
+        /**
+         * Function to update chart data dynamically.
+         * @param {Object} chart - The chart instance to update.
+         * @param {Array} newData - The new data to apply to the chart.
+         * @param {number} datasetIndex - The dataset index to update (0 for historical, 1 for forecast).
+         */
+        function updateChartData(chart, newData, datasetIndex = 0) {
+            chart.data.datasets[datasetIndex].data = newData;
+            chart.update();
+        }
+    });
+ </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPath = window.location.pathname;
+        let sidebarLinks = document.querySelectorAll(".nav-link");
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPath = window.location.pathname;
+        let sidebarLinks = document.querySelectorAll(".nav-link");
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+
+                // If the link is inside a dropdown, open the dropdown
+                let parentCollapse = link.closest(".collapse");
+                if (parentCollapse) {
+                    parentCollapse.classList.add("show");
+                    let dropdownToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
+                    if (dropdownToggle) {
+                    }
+
+                    // Auto-scroll to the active report link
+                    link.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
+        });
+    });
+</script>
+
+
+
+
+</html>
+
+
+    
