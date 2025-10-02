@@ -32,10 +32,10 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # MySQL Configuration
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_USER'] = 'ghg_app'
-app.config['MYSQL_PASSWORD'] = 'admin1234'  # Empty password as specified
-app.config['MYSQL_DB'] = 'emission'
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''  # Empty password as specified
+app.config['MYSQL_DB'] = 'ghg_database'
 
 # Helper function to establish MySQL connection
 def get_db_connection():
@@ -48,10 +48,10 @@ def get_db_connection():
     return connection
 
 db_config = {
-    'host': '127.0.0.1',
-    'user': 'ghg_app',
-    'password': 'admin1234',  # Replace with your actual MySQL password if it's not empty
-    'database': 'emission'
+    'host': 'localhost',
+    'user': 'root',
+    'password': '',  # Replace with your actual MySQL password if it's not empty
+    'database': 'ghg_database'
 }
 
 
@@ -9339,6 +9339,25 @@ def delete_emission_lpg_record(id):
         conn.close()
 
     return redirect(url_for('sdo_lpg_consumption_report'))
+
+@app.route('/delete_emission_lpg_record_csd/<int:id>', methods=['POST'])
+def delete_emission_lpg_record_csd(id):
+    if 'loggedIn' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM tbllpg WHERE ID = %s", (id,))
+        conn.commit()
+        flash("LPG consumption record deleted successfully.", "success")
+    except mysql.connector.Error as e:
+        flash(f"Database Error: {e}", "danger")
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('lpg_consumption_report'))
 
 @app.route('/sdo_lpg_consumption_pdf')
 def sdo_lpg_consumption_pdf():
