@@ -8344,6 +8344,36 @@ def delete_treated_water_record(id):
     finally:
         cursor.close()
         conn.close()
+#for treated water edit
+@app.route('/delete_treated_water/<int:id>', methods=['POST'])
+def delete_treated_water(id):
+    if 'loggedIn' not in session:
+        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete the record
+        cursor.execute("DELETE FROM tbltreatedwater WHERE id = %s", (id,))
+        
+        # Log the activity
+        username = session.get('username', 'Unknown')
+        campus = session.get('campus', 'Unknown')
+        action = f"Deleted Treated Water Record (ID: {id})"
+        cursor.execute("""
+            INSERT INTO activity_log (username, campus, action, report_name)
+            VALUES (%s, %s, %s, %s)
+        """, (username, campus, action, "Treated Water Report"))
+
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Record deleted successfully'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/edit_treated_water_record/<int:id>', methods=['POST'])
 def edit_treated_water_record(id):
