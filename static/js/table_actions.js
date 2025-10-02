@@ -93,10 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (confirm("Are you sure you want to delete this record?")) {
                 // Send a delete request to the server
-                fetch(`/delete_record`, {
-                    method: "DELETE",
+                fetch(`/delete_treated_water/${id}`, {
+                    method: "POST", // <-- change from DELETE to POST
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tableName, id }),
                 })
                     .then(response => {
                         if (response.ok) {
