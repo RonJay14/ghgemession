@@ -8229,6 +8229,33 @@ def delete_fuel_record(id):
 
     return redirect(url_for('sdo_fuel_emissions_report'))
 
+@app.route('/delete_fuel_record_emu/<int:id>', methods=['POST'])
+def delete_fuel_record_emu(id):
+    if 'loggedIn' not in session:
+        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM fuel_emissions WHERE id = %s", (id,))
+        conn.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Fuel record deleted successfully'
+        })
+            
+    except mysql.connector.Error as e:
+        return jsonify({
+            'success': False, 
+            'message': f'Database Error: {str(e)}'
+        }), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
 #edit for electricity emissions
 @app.route('/edit_electricity_record/<int:id>', methods=['POST'])
 def edit_electricity_record(id):
