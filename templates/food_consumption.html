@@ -906,7 +906,7 @@
 
         function deleteRecord(recordId) {
             if (confirm("Are you sure you want to delete this record?")) {
-                fetch(`/delete_food_record/${recordId}`, {
+                fetch(`/delete_food_record/${recordId}`, { // <-- corrected endpoint
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
