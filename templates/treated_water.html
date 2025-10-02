@@ -279,7 +279,7 @@
                                         </thead>
                                         <tbody id="reportData">
                                             {% for report in reports %}
-                                            <tr class="record" data-id="{{ report.id }}">
+                                            <tr class="record" data-id="{{ report.id }}" id="row-{{ report.id }}"> <!-- add id attribute -->
                                                 <td>{{ report.Month }}</td>
                                                 <td>{{ report.TreatedWaterVolume }}</td>
                                                 <td>{{ report.ReusedTreatedWaterVolume }}</td>
@@ -494,7 +494,7 @@
 
         function deleteRow(id) {
             if (confirm("Are you sure you want to delete this record?")) {
-                fetch(`/delete_report/${id}`, {
+                fetch(`/delete_treated_water/${id}`, { // use correct endpoint
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -505,7 +505,7 @@
                         if (data.status === 'success') {
                             // Remove the row from the table
                             const row = document.getElementById(`row-${id}`);
-                            row.remove();
+                            if (row) row.remove(); // check if row exists
                             alert(data.message);
                         } else {
                             alert("Error deleting record: " + data.message);
@@ -714,6 +714,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
+        <script src="../static/js/table_actions.js"></script>
 </body>
 
 </html>
