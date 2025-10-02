@@ -8295,7 +8295,8 @@ def edit_electricity_record(id):
         conn.close()
 
     return redirect(url_for('sdo_electricity_report'))
-app.route('/delete_electricity_record/<int:id>', methods=['POST'])
+    
+@app.route('/delete_electricity_record/<int:id>', methods=['POST'])
 def delete_electricity_record(id):
     if 'loggedIn' not in session:
         return redirect(url_for('login'))
@@ -8309,8 +8310,10 @@ def delete_electricity_record(id):
     except mysql.connector.Error as e:
         flash(f"Database Error: {e}", "danger")
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
     return redirect(url_for('sdo_electricity_report'))
 
