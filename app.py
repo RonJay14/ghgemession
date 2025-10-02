@@ -1781,6 +1781,47 @@ def delete_waste_record_by_id(record_id):  # Changed function name to avoid conf
         cursor.close()
         conn.close()
 
+@app.route('/delete_waste_unsegregation_record/<int:id>',  methods=['DELETE', 'POST'])
+def delete_waste_unsegregation_record(id):
+    if 'loggedIn' not in session:
+        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if record exists (adjust table name as needed)
+        cursor.execute("SELECT id FROM tblsolidwasteunsegregated WHERE id = %s", (id,))
+        if not cursor.fetchone():
+            return jsonify({'success': False, 'message': 'Record not found'}), 404
+
+        # Delete the record
+        cursor.execute("DELETE FROM tblsolidwasteunsegregated WHERE id = %s", (id,))
+        
+        # Log the activity
+        username = session.get('username', 'Unknown')
+        campus = session.get('campus', 'Unknown')
+        action = f"Deleted Waste Unsegregation Record (ID: {id})"
+        cursor.execute("""
+            INSERT INTO activity_log (username, campus, action, report_name)
+            VALUES (%s, %s, %s, %s)
+        """, (username, campus, action, "Waste Unsegregation Report"))
+
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Record deleted successfully'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Unexpected error: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 @app.route('/waste_segregation/all', methods=['GET'])
 def get_waste_segregation_data_for_printing():
     # Ensure user is logged in
