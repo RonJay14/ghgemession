@@ -80,12 +80,12 @@
 
         <div id="layoutSidenav_content">
             <main>
-                <div class="container-fluid px-4" >
+                <div class="container-fluid px-4">
 
-                    <div class="container-fluid px-4" style="padding: 20px;"x>
+                    <div class="container-fluid px-4" style="padding: 20px;" x>
                         <h3 class="fw-bold text-uppercase border-bottom border-3 pb-2 text-center fs-1 pt-5"
-                        style="border-color: #2b3e53;">
-                        Electric Consumption Report</h3>
+                            style="border-color: #2b3e53;">
+                            Electric Consumption Report</h3>
 
                         <div class="topnav-table d-flex align-items-center justify-content-between px-3 py-2">
                             <!-- Filter Dropdown -->
@@ -99,48 +99,57 @@
                                     <li class="dropdown-submenu">
                                         <a class="dropdown-item dropdown-toggle" href="#">Month</a>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item {% if selected_month == '' %}active{% endif %}" href="?month=">All Months</a></li>
-                                            {% for m in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
-                                            <li><a class="dropdown-item {% if selected_month == m %}active{% endif %}" href="?month={{ m }}">{{ m }}</a></li>
+                                            <li><a class="dropdown-item {% if selected_month == '' %}active{% endif %}"
+                                                    href="?month=">All Months</a></li>
+                                            {% for m in ["January", "February", "March", "April", "May", "June", "July",
+                                            "August", "September", "October", "November", "December"] %}
+                                            <li><a class="dropdown-item {% if selected_month == m %}active{% endif %}"
+                                                    href="?month={{ m }}">{{ m }}</a></li>
                                             {% endfor %}
                                         </ul>
                                     </li>
-                        
+
                                     <!-- Quarter Filter -->
                                     <li class="dropdown-submenu">
                                         <a class="dropdown-item dropdown-toggle" href="#">Quarter</a>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item {% if selected_quarter == '' %}active{% endif %}" href="?quarter=">All Quarters</a></li>
-                                            <li><a class="dropdown-item {% if selected_quarter == 'Q1' %}active{% endif %}" href="?quarter=Q1">Q1</a></li>
-                                            <li><a class="dropdown-item {% if selected_quarter == 'Q2' %}active{% endif %}" href="?quarter=Q2">Q2</a></li>
-                                            <li><a class="dropdown-item {% if selected_quarter == 'Q3' %}active{% endif %}" href="?quarter=Q3">Q3</a></li>
-                                            <li><a class="dropdown-item {% if selected_quarter == 'Q4' %}active{% endif %}" href="?quarter=Q4">Q4</a></li>
+                                            <li><a class="dropdown-item {% if selected_quarter == '' %}active{% endif %}"
+                                                    href="?quarter=">All Quarters</a></li>
+                                            <li><a class="dropdown-item {% if selected_quarter == 'Q1' %}active{% endif %}"
+                                                    href="?quarter=Q1">Q1</a></li>
+                                            <li><a class="dropdown-item {% if selected_quarter == 'Q2' %}active{% endif %}"
+                                                    href="?quarter=Q2">Q2</a></li>
+                                            <li><a class="dropdown-item {% if selected_quarter == 'Q3' %}active{% endif %}"
+                                                    href="?quarter=Q3">Q3</a></li>
+                                            <li><a class="dropdown-item {% if selected_quarter == 'Q4' %}active{% endif %}"
+                                                    href="?quarter=Q4">Q4</a></li>
                                         </ul>
                                     </li>
-                        
-                                        <!-- Year -->
-                                        <li class="dropdown-submenu">
-                                            <a class="dropdown-item dropdown-toggle" href="#">Year</a>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item {% if year == '' %}active{% endif %}"
-                                                        href="?year=">All Years</a></li>
-                                                {% for y in range(2025, 2013, -1) %}
-                                                <li><a class="dropdown-item {% if year == y|string %}active{% endif %}"
-                                                        href="?year={{ y }}">{{ y }}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </li>
+
+                                    <!-- Year -->
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">Year</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item {% if year == '' %}active{% endif %}"
+                                                    href="?year=">All Years</a></li>
+                                            {% for y in range(2025, 2013, -1) %}
+                                            <li><a class="dropdown-item {% if year == y|string %}active{% endif %}"
+                                                    href="?year={{ y }}">{{ y }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
                                 </ul>
                             </div>
                             <!-- Buttons Container -->
                             <div class="buttons-container d-flex align-items-center gap-2" style="z-index: 10;">
-                                <button id="openModalBtn" style="border-color: #2c3f54;" class="btn px-4 py-2" onclick="openCalculatorModal()">
+                                <button id="openModalBtn" style="border-color: #2c3f54;" class="btn px-4 py-2"
+                                    onclick="openCalculatorModal()">
                                     <i class="fas fa-calculator"></i> Calculate
                                 </button>
                                 <button style="border-color: #2c3f54 ;" class="btn px-4 py-2" onclick="printReport()">
                                     <i class="fas fa-print"></i> Print Report
                                 </button>
-                        
+
                                 <!-- Dropdown for Download Options -->
                                 <div class="dropdown" style="z-index: 10;">
                                     <button class="btn dropdown-toggle px-4 py-2" type="button" id="downloadDropdown"
@@ -162,24 +171,43 @@
                                 <span class="close" onclick="closeModal()">&times;</span>
                                 <div class="container">
                                     <div class="form-container">
-                                        <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Electricity Consumption CO₂ Emission Calculator</h2>
-                                        <form id="electricityForm" method="POST" action="{{ url_for('electricity_consumption') }}" onsubmit="return validateAndSubmitForm()">
+                                        <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Electricity
+                                            Consumption CO₂ Emission Calculator</h2>
+                                        <form id="electricityForm" method="POST"
+                                            action="{{ url_for('electricity_consumption') }}"
+                                            onsubmit="return validateAndSubmitForm()">
                                             <div class="form-group">
                                                 <label for="campus">Campus:</label>
-                                                <select id="campus" name="campus"  class="form-control">
-                                                    <option value="" {% if not session.get('campus') %}selected{% endif %}></option>
-                                                    <option value="Alangilan" {% if session.get('campus')=='Alangilan' %}selected{% endif %}>Alangilan</option>
-                                                    <option value="ARASOF-Nasugbu" {% if session.get('campus')=='ARASOF-Nasugbu' %}selected{% endif %}>ARASOF-Nasugbu</option>
-                                                    <option value="Balayan" {% if session.get('campus')=='Balayan' %}selected{% endif %}>Balayan</option>
-                                                    <option value="Central" {% if session.get('campus')=='Central' %}selected{% endif %}>Central</option>
-                                                    <option value="JPLPC-Malvar" {% if session.get('campus')=='JPLPC-Malvar' %}selected{% endif %}>JPLPC-Malvar</option>
-                                                    <option value="Lemery" {% if session.get('campus')=='Lemery' %}selected{% endif %}>Lemery</option>
-                                                    <option value="Lipa" {% if session.get('campus')=='Lipa' %}selected{% endif %}>Lipa</option>
-                                                    <option value="Lobo" {% if session.get('campus')=='Lobo' %}selected{% endif %}>Lobo</option>
-                                                    <option value="Mabini" {% if session.get('campus')=='Mabini' %}selected{% endif %}>Mabini</option>
-                                                    <option value="Pablo Borbon" {% if session.get('campus')=='Pablo Borbon' %}selected{% endif %}>Pablo Borbon</option>
-                                                    <option value="Rosario" {% if session.get('campus')=='Rosario' %}selected{% endif %}>Rosario</option>
-                                                    <option value="San Juan" {% if session.get('campus')=='San Juan' %}selected{% endif %}>San Juan</option>
+                                                <select id="campus" name="campus" class="form-control">
+                                                    <option value="" {% if not session.get('campus') %}selected{% endif
+                                                        %}></option>
+                                                    <option value="Alangilan" {% if session.get('campus')=='Alangilan'
+                                                        %}selected{% endif %}>Alangilan</option>
+                                                    <option value="ARASOF-Nasugbu" {% if
+                                                        session.get('campus')=='ARASOF-Nasugbu' %}selected{% endif %}>
+                                                        ARASOF-Nasugbu</option>
+                                                    <option value="Balayan" {% if session.get('campus')=='Balayan'
+                                                        %}selected{% endif %}>Balayan</option>
+                                                    <option value="Central" {% if session.get('campus')=='Central'
+                                                        %}selected{% endif %}>Central</option>
+                                                    <option value="JPLPC-Malvar" {% if
+                                                        session.get('campus')=='JPLPC-Malvar' %}selected{% endif %}>
+                                                        JPLPC-Malvar</option>
+                                                    <option value="Lemery" {% if session.get('campus')=='Lemery'
+                                                        %}selected{% endif %}>Lemery</option>
+                                                    <option value="Lipa" {% if session.get('campus')=='Lipa'
+                                                        %}selected{% endif %}>Lipa</option>
+                                                    <option value="Lobo" {% if session.get('campus')=='Lobo'
+                                                        %}selected{% endif %}>Lobo</option>
+                                                    <option value="Mabini" {% if session.get('campus')=='Mabini'
+                                                        %}selected{% endif %}>Mabini</option>
+                                                    <option value="Pablo Borbon" {% if
+                                                        session.get('campus')=='Pablo Borbon' %}selected{% endif %}>
+                                                        Pablo Borbon</option>
+                                                    <option value="Rosario" {% if session.get('campus')=='Rosario'
+                                                        %}selected{% endif %}>Rosario</option>
+                                                    <option value="San Juan" {% if session.get('campus')=='San Juan'
+                                                        %}selected{% endif %}>San Juan</option>
                                                 </select>
                                             </div>
 
@@ -195,7 +223,8 @@
 
                                             <div class="form-group">
                                                 <label for="month">Month:</label>
-                                                <select id="month" name="month" required onchange="updateQuarter()" class="form-control">
+                                                <select id="month" name="month" required onchange="updateQuarter()"
+                                                    class="form-control">
                                                     <option value=""></option>
                                                     <option value="January">January</option>
                                                     <option value="February">February</option>
@@ -214,7 +243,8 @@
 
                                             <div class="form-group">
                                                 <label for="quarter">Quarter:</label>
-                                                <input type="text" id="quarter" name="quarter" readonly class="form-control" value="">
+                                                <input type="text" id="quarter" name="quarter" readonly
+                                                    class="form-control" value="">
                                             </div>
                                             <div class="form-group">
                                                 <label for="year">Year:</label>
@@ -237,50 +267,60 @@
 
                                             <div class="form-group">
                                                 <label for="prevReading">Previous Reading (kWh):</label>
-                                                <input type="number" id="prevReading" name="prevReading" step="0.01" required class="form-control">
+                                                <input type="number" id="prevReading" name="prevReading" step="0.01"
+                                                    required class="form-control">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="currentReading">Current Reading (kWh):</label>
-                                                <input type="number" id="currentReading" name="currentReading" step="0.01" required class="form-control">
+                                                <input type="number" id="currentReading" name="currentReading"
+                                                    step="0.01" required class="form-control">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="multiplier">Multiplier:</label>
-                                                <input type="number" id="multiplier" name="multiplier" step="0.01" required class="form-control">
+                                                <input type="number" id="multiplier" name="multiplier" step="0.01"
+                                                    required class="form-control">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="totalAmount">Total Amount:</label>
-                                                <input type="number" id="totalAmount" name="totalAmount" step="0.01" required class="form-control">
+                                                <input type="number" id="totalAmount" name="totalAmount" step="0.01"
+                                                    required class="form-control">
                                             </div>
 
                                             <input type="hidden" id="tree_offset_input" name="tree_offset" value="0">
 
                                             <div class="form-group">
-                                                <button type="button" onclick="calculateConsumption()" class="btn-calculate">Calculate</button>
+                                                <button type="button" onclick="calculateConsumption()"
+                                                    class="btn-calculate">Calculate</button>
                                             </div>
 
                                             <div class="ghg-emission-container">
                                                 <div class="ghg-emission-field">
                                                     <label for="totalConsumption">Total Consumption (kWh):</label>
-                                                    <input type="number" id="totalConsumption" name="totalConsumption" step="0.01" readonly class="form-control" value="0.00">
+                                                    <input type="number" id="totalConsumption" name="totalConsumption"
+                                                        step="0.01" readonly class="form-control" value="0.00">
                                                 </div>
                                                 <div class="ghg-emission-field">
                                                     <label for="pricePerKwh">Price per kWh:</label>
-                                                    <input type="number" id="pricePerKwh" name="pricePerKwh" step="0.01" readonly class="form-control" value="0.00">
+                                                    <input type="number" id="pricePerKwh" name="pricePerKwh" step="0.01"
+                                                        readonly class="form-control" value="0.00">
                                                 </div>
                                                 <div class="ghg-emission-field">
                                                     <label for="kgCO2PerKwh">GHG Emission (kg CO2/kWh):</label>
-                                                    <input type="number" id="kgCO2PerKwh" name="kgCO2PerKwh" step="0.01" readonly class="form-control" value="0.00">
+                                                    <input type="number" id="kgCO2PerKwh" name="kgCO2PerKwh" step="0.01"
+                                                        readonly class="form-control" value="0.00">
                                                 </div>
                                                 <div class="ghg-emission-field">
                                                     <label for="tCO2PerKwh">GHG Emission (t CO2/kWh):</label>
-                                                    <input type="number" id="tCO2PerKwh" name="tCO2PerKwh" step="0.01" readonly class="form-control" value="0.00">
+                                                    <input type="number" id="tCO2PerKwh" name="tCO2PerKwh" step="0.01"
+                                                        readonly class="form-control" value="0.00">
                                                 </div>
                                                 <div class="ghg-emission-field">
                                                     <label for="treeOffset">Tree Offset:</label>
-                                                    <input type="number" id="treeOffset" name="treeOffset" readonly class="form-control" value="0">
+                                                    <input type="number" id="treeOffset" name="treeOffset" readonly
+                                                        class="form-control" value="0">
                                                 </div>
                                             </div>
 
@@ -294,10 +334,10 @@
                         </div>
 
                         <script>
-                            document.getElementById("campus").addEventListener("mousedown", function (event) {event.preventDefault()});
+                            document.getElementById("campus").addEventListener("mousedown", function (event) { event.preventDefault() });
                         </script>
 
-            
+
 
 
                         <!-- Data table -->
@@ -337,7 +377,7 @@
                                         </thead>
                                         <tbody id="reportData">
                                             {% for report in reports %}
-                                            <tr class="record">
+                                            <tr class="record" data-id="{{ report.id }}">
                                                 <td>{{ report.year }}</td>
                                                 <td>{{ report.month }}</td>
                                                 <td>{{ report.quarter }}</td>
@@ -352,14 +392,9 @@
                                                 <td>{{ report.t_co2_per_kwh }}</td>
                                                 <td>{{ report.tree_offset }}</td> <!-- New Data -->
                                                 <td>
-                                                    <form action="{{ url_for('delete_record', record_id=report.id) }}"
-                                                        method="POST" style="display:inline;">
-                                                        <button class="delete-btn"
-                                                            onclick="deleteRow('{{ report.id }}')">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-
-                                                    </form>
+                                                    <button class="delete-btn" onclick="deleteRow({{ report.id }})">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -397,7 +432,8 @@
                             <!-- ------------------------------------------------------------------------------------------------------ -->
 
                             <!-- Pagination -->
-                            <div style="z-index: 4; position: relative;" class="pagination-container d-flex justify-content-between align-items-center mt-3">
+                            <div style="z-index: 4; position: relative;"
+                                class="pagination-container d-flex justify-content-between align-items-center mt-3">
                                 <!-- Previous Button -->
                                 <a style="text-decoration: none;"
                                     class="btn btn-link text-dark {% if current_page == 1 %}disabled{% endif %}"
@@ -423,46 +459,89 @@
     </div>
 
     <script>
-     
 
+        function deleteRow(id) {
+            if (confirm("Are you sure you want to delete this record?")) {
+                fetch(`/delete_electricity_record_emu/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(async response => {
+                        const responseText = await response.text();
+                        console.log('Raw response:', responseText);
+
+                        try {
+                            const data = JSON.parse(responseText);
+                            return data;
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            throw new Error('Server returned invalid JSON');
+                        }
+                    })
+                    .then(data => {
+                        if (data && data.success) {
+                            // Remove the row from the table
+                            const row = document.querySelector(`tr[data-id="${id}"]`);
+                            if (row) {
+                                row.remove();
+                            }
+
+                            // Show success message
+                            alert('Record deleted successfully!');
+                            // Optionally reload the page to refresh data
+                            // location.reload();
+                        } else {
+                            const errorMsg = data && data.message ? data.message : 'Unknown error';
+                            alert("Error deleting record: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Delete error:', error);
+                        alert('Error deleting record: ' + error.message);
+                    });
+            }
+        }
         function calculateConsumption() {
-        const prevReading = parseFloat(document.getElementById('prevReading').value);
-        const currentReading = parseFloat(document.getElementById('currentReading').value);
-        const multiplier = parseFloat(document.getElementById('multiplier').value);
-        const totalAmount = parseFloat(document.getElementById('totalAmount').value);
+            const prevReading = parseFloat(document.getElementById('prevReading').value);
+            const currentReading = parseFloat(document.getElementById('currentReading').value);
+            const multiplier = parseFloat(document.getElementById('multiplier').value);
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value);
 
-        if (isNaN(prevReading) || isNaN(currentReading) || isNaN(multiplier) || isNaN(totalAmount)) {
-            alert("Please fill in all required fields.");
-            return false;
+            if (isNaN(prevReading) || isNaN(currentReading) || isNaN(multiplier) || isNaN(totalAmount)) {
+                alert("Please fill in all required fields.");
+                return false;
+            }
+
+            const totalConsumption = (currentReading - prevReading) * multiplier;
+            if (totalConsumption < 0) {
+                alert("Consumption cannot be negative. Check your readings.");
+                return false;
+            }
+
+            const pricePerKwh = totalAmount / totalConsumption;
+            const kgCO2PerKwh = 0.7122 * totalConsumption;
+            const tCO2PerKwh = kgCO2PerKwh / 1000;
+            const treeOffset = Math.round(tCO2PerKwh / 0.0218);
+
+            document.getElementById('totalConsumption').value = totalConsumption.toFixed(2);
+            document.getElementById('pricePerKwh').value = pricePerKwh.toFixed(2);
+            document.getElementById('kgCO2PerKwh').value = kgCO2PerKwh.toFixed(2);
+            document.getElementById('tCO2PerKwh').value = tCO2PerKwh.toFixed(2);
+            document.getElementById('treeOffset').value = treeOffset;
+            document.getElementById('tree_offset_input').value = treeOffset;
+
+            return true;
         }
 
-        const totalConsumption = (currentReading - prevReading) * multiplier;
-        if (totalConsumption < 0) {
-            alert("Consumption cannot be negative. Check your readings.");
-            return false;
+        function validateAndSubmitForm() {
+            if (calculateConsumption()) {
+                return true; // Submit the form if calculations are successful
+            }
+            return false; // Prevent form submission if calculations fail
         }
-
-        const pricePerKwh = totalAmount / totalConsumption;
-        const kgCO2PerKwh = 0.7122 * totalConsumption;
-        const tCO2PerKwh = kgCO2PerKwh / 1000;
-        const treeOffset = Math.round(tCO2PerKwh / 0.0218);
-
-        document.getElementById('totalConsumption').value = totalConsumption.toFixed(2);
-        document.getElementById('pricePerKwh').value = pricePerKwh.toFixed(2);
-        document.getElementById('kgCO2PerKwh').value = kgCO2PerKwh.toFixed(2);
-        document.getElementById('tCO2PerKwh').value = tCO2PerKwh.toFixed(2);
-        document.getElementById('treeOffset').value = treeOffset;
-        document.getElementById('tree_offset_input').value = treeOffset;
-
-        return true;
-    }
-
-    function validateAndSubmitForm() {
-        if (calculateConsumption()) {
-            return true; // Submit the form if calculations are successful
-        }
-        return false; // Prevent form submission if calculations fail
-    }
 
         // Function to open the modal
         function openCalculatorModal() {
@@ -576,13 +655,13 @@
                     document.body.innerHTML = originalContents;
                 })
                 .catch(error => console.error('Error fetching data:', error));
-        }  
+        }
 
         function downloadExcel() {
             // Get current URL parameters for filters
             const urlParams = new URLSearchParams(window.location.search);
             const queryString = urlParams.toString();
-            
+
             // Get filter values
             const month = urlParams.get('month') || '';
             const quarter = urlParams.get('quarter') || '';
@@ -616,7 +695,7 @@
                     const headers = [
                         "Campus", "Category", "Year", "Month", "Quarter", "Previous Reading (kWh)",
                         "Current Reading (kWh)", "Multiplier", "Total Amount",
-                        "Consumption (kWh)", "Price per kWh", "GHG Emission (kg CO2/kWh)", 
+                        "Consumption (kWh)", "Price per kWh", "GHG Emission (kg CO2/kWh)",
                         "GHG Emission (t CO2/kWh)", "Tree Offset"
                     ];
 
@@ -675,7 +754,7 @@
             // Get current URL parameters for filters
             const urlParams = new URLSearchParams(window.location.search);
             const queryString = urlParams.toString();
-            
+
             // Get filter values
             const month = urlParams.get('month') || '';
             const quarter = urlParams.get('quarter') || '';
@@ -700,7 +779,7 @@
                     const headers = [
                         "Campus", "Category", "Year", "Month", "Quarter", "Previous Reading (kWh)",
                         "Current Reading (kWh)", "Multiplier", "Total Amount",
-                        "Consumption (kWh)", "Price per kWh", "GHG Emission (kg CO2/kWh)", 
+                        "Consumption (kWh)", "Price per kWh", "GHG Emission (kg CO2/kWh)",
                         "GHG Emission (t CO2/kWh)", "Tree Offset"
                     ];
                     const csvRows = [headers.join(",")];
@@ -736,7 +815,7 @@
                     // Create and download the CSV file
                     const csvBlob = new Blob([csvRows.join("\n")], { type: "text/csv" });
                     const link = document.createElement("a");
-                    
+
                     if (link.download !== undefined) {
                         const url = URL.createObjectURL(csvBlob);
                         link.setAttribute("href", url);
