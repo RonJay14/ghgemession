@@ -25,6 +25,8 @@
     <!-- ✅ PDF & HTML to PDF Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <!-- ✅ SweetAlert2 for delete confirmation -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Add this style section in your head -->
     <style>
         /* Modal width and styling */
@@ -313,133 +315,139 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for record in data %}
-                                                <tr>
-                                                    <td>{{ record.Campus }}</td>
-                                                    <td>{{ record.YearTransact }}</td>
-                                                    <td>{{ record.Month }}</td>
-                                                    <td>{{ record.Office }}</td>
-                                                    <td>{{ record.ConcessionariesType }}</td>
-                                                    <td>{{ record.TankQuantity }}</td>
-                                                    <td>{{ record.TankWeight }}</td>
-                                                    <td>{{ record.TankVolume }}</td>
-                                                    <td>{{ record.TotalTankVolume }}</td>
-                                                    <td>{{ record.GHGEmissionKGCO2e }}</td>
-                                                    <td>{{ record.GHGEmissionTCO2e }}</td>
-                                                    <td>
-                                                        <div class="d-flex justify-content-center gap-2">
-                                                            <!-- Edit Button -->
-                                                            <button type="button" class="btn btn-link p-0"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#editModal{{ record['id'] }}">
-                                                                <i class="fas fa-edit" style="color: #0d6efd;"></i>
-                                                            </button>
+                                                {% if data %}
+                                                    {% for record in data %}
+                                                        <tr>
+                                                            <td>{{ record.Campus }}</td>
+                                                            <td>{{ record.YearTransact }}</td>
+                                                            <td>{{ record.Month }}</td>
+                                                            <td>{{ record.Office }}</td>
+                                                            <td>{{ record.ConcessionariesType }}</td>
+                                                            <td>{{ record.TankQuantity }}</td>
+                                                            <td>{{ record.TankWeight }}</td>
+                                                            <td>{{ record.TankVolume }}</td>
+                                                            <td>{{ record.TotalTankVolume }}</td>
+                                                            <td>{{ record.GHGEmissionKGCO2e }}</td>
+                                                            <td>{{ record.GHGEmissionTCO2e }}</td>
+                                                            <td>
+                                                                <div class="d-flex justify-content-center gap-2">
+                                                                    <!-- Edit Button -->
+                                                                    <button type="button" class="btn btn-link p-0"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editModal{{ record['id'] }}">
+                                                                        <i class="fas fa-edit" style="color: #0d6efd;"></i>
+                                                                    </button>
 
-                                                            <!-- Delete Form -->
-                                                            <form class="delete-form d-inline m-0"
-                                                                data-id="{{ record['id'] }}">
-                                                                <button type="submit" class="btn btn-link p-0">
-                                                                    <i class="fas fa-trash" style="color: #dc3545;"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                    <div class="modal fade" id="editModal{{ record['id'] }}"
-                                                        tabindex="-1" aria-labelledby="editModalLabel{{ record['id'] }}"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <form method="POST"
-                                                                    action="{{ url_for('edit_emission_lpg_record', id=record['id']) }}">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title"
-                                                                            id="editModalLabel{{ record['id'] }}">
-                                                                            Edit LPG Record
-                                                                        </h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Close"></button>
+                                                                    <!-- Delete Form -->
+                                                                    <form class="delete-form d-inline m-0"
+                                                                        data-id="{{ record['id'] }}">
+                                                                        <button type="submit" class="btn btn-link p-0">
+                                                                            <i class="fas fa-trash" style="color: #dc3545;"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                            <div class="modal fade" id="editModal{{ record['id'] }}"
+                                                                tabindex="-1" aria-labelledby="editModalLabel{{ record['id'] }}"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <form method="POST"
+                                                                            action="{{ url_for('edit_emission_lpg_record', id=record['id']) }}">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title"
+                                                                                    id="editModalLabel{{ record['id'] }}">
+                                                                                    Edit LPG Record
+                                                                                </h5>
+                                                                                <button type="button" class="btn-close"
+                                                                                    data-bs-dismiss="modal"
+                                                                                    aria-label="Close"></button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                <!-- Optional: Hidden input for record_id -->
+                                                                                <input type="hidden" name="record_id"
+                                                                                    value="{{ record['id'] }}">
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label
+                                                                                        for="year{{ record['id'] }}">Year</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        id="year{{ record['id'] }}" name="year"
+                                                                                        value="{{ record['YearTransact'] }}"
+                                                                                        required>
+                                                                                </div>
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label
+                                                                                        for="month{{ record['id'] }}">Month</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        id="month{{ record['id'] }}"
+                                                                                        name="month"
+                                                                                        value="{{ record['Month'] }}" required>
+                                                                                </div>
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label
+                                                                                        for="office{{ record['id'] }}">Office</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        id="office{{ record['id'] }}"
+                                                                                        name="office"
+                                                                                        value="{{ record['Office'] }}" required>
+                                                                                </div>
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label
+                                                                                        for="concessionaire{{ record['id'] }}">Concessionaire</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        id="concessionaire{{ record['id'] }}"
+                                                                                        name="concessionaires"
+                                                                                        value="{{ record['ConcessionariesType'] }}"
+                                                                                        required>
+                                                                                </div>
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label for="qty{{ record['id'] }}">Quantity
+                                                                                        (Tanks)</label>
+                                                                                    <input type="number" step="any"
+                                                                                        class="form-control"
+                                                                                        id="qty{{ record['id'] }}" name="qty"
+                                                                                        value="{{ record['TankQuantity'] }}"
+                                                                                        required>
+                                                                                </div>
+
+                                                                                <div class="form-group mb-3">
+                                                                                    <label
+                                                                                        for="tankWeight{{ record['id'] }}">Tank
+                                                                                        Weight</label>
+                                                                                    <input type="number" step="any"
+                                                                                        class="form-control"
+                                                                                        id="tankWeight{{ record['id'] }}"
+                                                                                        name="tankWeight"
+                                                                                        value="{{ record['TankWeight'] }}"
+                                                                                        required>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary"
+                                                                                    data-bs-dismiss="modal">Close</button>
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary">Save
+                                                                                    changes</button>
+                                                                            </div>
+                                                                        </form>
                                                                     </div>
-
-                                                                    <div class="modal-body">
-                                                                        <!-- Optional: Hidden input for record_id -->
-                                                                        <input type="hidden" name="record_id"
-                                                                            value="{{ record['id'] }}">
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label
-                                                                                for="year{{ record['id'] }}">Year</label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="year{{ record['id'] }}" name="year"
-                                                                                value="{{ record['YearTransact'] }}"
-                                                                                required>
-                                                                        </div>
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label
-                                                                                for="month{{ record['id'] }}">Month</label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="month{{ record['id'] }}"
-                                                                                name="month"
-                                                                                value="{{ record['Month'] }}" required>
-                                                                        </div>
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label
-                                                                                for="office{{ record['id'] }}">Office</label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="office{{ record['id'] }}"
-                                                                                name="office"
-                                                                                value="{{ record['Office'] }}" required>
-                                                                        </div>
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label
-                                                                                for="concessionaire{{ record['id'] }}">Concessionaire</label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="concessionaire{{ record['id'] }}"
-                                                                                name="concessionaires"
-                                                                                value="{{ record['ConcessionariesType'] }}"
-                                                                                required>
-                                                                        </div>
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="qty{{ record['id'] }}">Quantity
-                                                                                (Tanks)</label>
-                                                                            <input type="number" step="any"
-                                                                                class="form-control"
-                                                                                id="qty{{ record['id'] }}" name="qty"
-                                                                                value="{{ record['TankQuantity'] }}"
-                                                                                required>
-                                                                        </div>
-
-                                                                        <div class="form-group mb-3">
-                                                                            <label
-                                                                                for="tankWeight{{ record['id'] }}">Tank
-                                                                                Weight</label>
-                                                                            <input type="number" step="any"
-                                                                                class="form-control"
-                                                                                id="tankWeight{{ record['id'] }}"
-                                                                                name="tankWeight"
-                                                                                value="{{ record['TankWeight'] }}"
-                                                                                required>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Close</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn-primary">Save
-                                                                            changes</button>
-                                                                    </div>
-                                                                </form>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
 
-                                                </tr>
-                                                {% endfor %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="12" class="text-center">No data available</td>
+                                                    </tr>
+                                                {% endif %}
                                             </tbody>
                                         </table>
                                     </div>
@@ -648,6 +656,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.delete-form').forEach(form => {
                 form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Prevent immediate form submission!
                     const id = this.getAttribute('data-id');
                     Swal.fire({
                         title: 'Are you sure?',
@@ -662,7 +671,7 @@
                             // Create and submit hidden form
                             const tempForm = document.createElement('form');
                             tempForm.method = 'POST';
-                            tempForm.action = `/delete_emission_lpg_record/${id}`;
+                            tempForm.action = `/delete_emission_lpg_record_csd/${id}`;
                             document.body.appendChild(tempForm);
                             tempForm.submit();
                         }
