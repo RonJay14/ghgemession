@@ -366,9 +366,9 @@
                                                 <td>{{ report.total_emission }}</td>
                                                 <td>{{ report.total_emission_t }}</td>
                                                 <td>
-                                                    <button class="delete-btn" onclick="deleteRow('{{ report.id }}')"><i
-                                                            class="fa-solid fa-trash"></i></button>
-
+                                                    <button class="delete-btn" onclick="deleteRow({{ report.id }})">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -541,35 +541,69 @@
             location.reload();
         }
 
-
-
-        function deleteRow(id) {
-            // Confirm the deletion
-            if (confirm("Are you sure you want to delete this record?")) {
-                fetch(`/delete_fuel_record/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Find the table row with the corresponding record ID
-                            const row = document.querySelector(`tr[data-id='${id}']`);
-                            if (row) {
-                                // Remove the row from the table
-                                row.remove();
-                            }
-                        } else {
-                            alert("Error deleting record: " + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Delete error:', error);
-                    });
+function deleteRow(id) {
+    if (confirm("Are you sure you want to delete this record?")) {
+        fetch(`/delete_fuel_record_emu/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        }
+        })
+        .then(async response => {
+            const responseText = await response.text();
+            console.log('Raw response:', responseText);
+            
+            try {
+                const data = JSON.parse(responseText);
+                return data;
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                throw new Error('Server returned invalid JSON');
+            }
+        })
+        .then(data => {
+            console.log('Parsed data:', data); // Debug: check what we're working with
+            
+            if (data && data.success) {
+                // Remove the row from the table
+                const row = document.querySelector(`tr[data-id='${id}']`);
+                if (row) {
+                    row.remove();
+                    console.log('Row removed successfully'); // Debug
+                } else {
+                    console.warn('Row not found for ID:', id); // Debug
+                }
+                
+                // Show success message
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'The record has been deleted successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Record deleted successfully!');
+                }
+            } else {
+                const errorMsg = data && data.message ? data.message : 'Unknown error';
+                console.error('Server returned error:', errorMsg);
+                alert("Error deleting record: " + errorMsg);
+            }
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            // Check if it's a JSON parse error or network error
+            if (error.message.includes('JSON')) {
+                alert('Server error: Invalid response format');
+            } else {
+                alert('Error deleting record: ' + error.message);
+            }
+        });
+    }
+}
         function openCalculatorModal() {
             const modal = document.getElementById('myModal');
             modal.style.display = 'block'; // Show the modal
@@ -804,31 +838,6 @@
                 });
         }
 
-        function deleteRow(id) {
-            // Implement AJAX call to delete the row
-            fetch(`/delete_fuel_record/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Find the table row with the corresponding record ID
-                        const row = document.querySelector(`tr[data-id='${id}']`);
-                        if (row) {
-                            // Remove the row from the table
-                            row.remove();
-                        }
-                    } else {
-                        alert("Error deleting record: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Delete error:', error);
-                });
-        }
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const selectedYear = urlParams.get('year');
