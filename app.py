@@ -32,10 +32,10 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # MySQL Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''  # Empty password as specified
-app.config['MYSQL_DB'] = 'ghg_database'
+app.config['MYSQL_HOST'] = '127.0.0.1'
+app.config['MYSQL_USER'] = 'ghg_app'
+app.config['MYSQL_PASSWORD'] = 'admin1234'  # Empty password as specified
+app.config['MYSQL_DB'] = 'emission'
 
 # Helper function to establish MySQL connection
 def get_db_connection():
@@ -48,10 +48,10 @@ def get_db_connection():
     return connection
 
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',  # Replace with your actual MySQL password if it's not empty
-    'database': 'ghg_database'
+    'host': '127.0.0.1',
+    'user': 'ghg_app',
+    'password': 'admin1234',  # Replace with your actual MySQL password if it's not empty
+    'database': 'emission'
 }
 
 
